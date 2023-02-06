@@ -23,6 +23,23 @@ function* EachVectorAndAdjacents(ary)
   yield { curr: ary[i], succ: ary[0], prec: ary[j] };
 };
 
+
+///
+// pass in a polygon
+// returns a new Phaser.Geom.Line
+function* EachPoligonSide({points})
+{
+    const polygonSide = new Phaser.Geom.Line()
+    for (let i = 0, {length} = points, j = length - 1; i < length; j = i++)
+    {     
+      // console.log(i, j);
+      // yield graphics.lineBetween(points[i].x, points[i].y, points[j].x, points[j].y);
+      yield polygonSide.setTo(points[i].x, points[i].y, points[j].x, points[j].y);
+    }
+}
+
+////anyAgainstAllOthers (in graph)
+// returns concaveA: current point, concaveB: any other point;
 function* anyAgainstAllOthers(ary)
 {
   console.log("anyAgainstAllOthers arr:", ary)
@@ -65,12 +82,12 @@ export default class PMpathfinding
 
         //for recycle
         this.vertexA = new Phaser.Math.Vector2();
+
         this.vertexB = new Phaser.Math.Vector2();
 
-      // for (  const {concaveA, concaveB} of anyAgainstAllOthers([..."ABCD"])  )
-      // {
-      //   console.log("DB:", concaveA, concaveB)
-      // }
+        this.out = new Phaser.Math.Vector2();
+        
+        this.epsilon = 0.5;
     }
 
     addPolygonalMap(aryOfNumberArys, name = "default")
@@ -122,12 +139,36 @@ export default class PMpathfinding
 
     *testGenConnectNodes(polygonalMap)
     {
-      const ary = [...polygonalMap.graph.keys()]
-      console.log("KEyS", ary);
-      for (const {concaveA, concaveB} of anyAgainstAllOthers(ary))
+      const ray = new Phaser.Geom.Line();
+      //console.log("KEyS", ary);
+      for (const {concaveA, concaveB} of anyAgainstAllOthers([...polygonalMap.graph.keys()]))
       {
+        // basically, the old inLineOfS...
+        ray.setTo(concaveA.x, concaveA.y, concaveB.x, concaveB.y);
+
         this.debug.lineFromVecs(concaveA, concaveB)
-        yield console.log("orc", concaveA, concaveB)
+        // yield console.log("orc", ray)
+
+        for (const polygon of polygonalMap.polygons)
+        {
+          console.log("inLineOfSight 2", polygon)
+          for (const polygonSide of EachPoligonSide(polygon))
+          {
+            this.debug.graphics.clear()
+            yield this.debug.lineFromVecs(concaveA, concaveB, 0xffffff)
+            this.debug.lineFromVecs(polygonSide.getPointA(), polygonSide.getPointB(), 0x9a8954)
+            yield console.log("LineToLine", Phaser.Geom.Intersects.LineToLine(ray, polygonSide, this.out))
+          }
+        }
+        // this.testGeninLineOfSight(null, null, polygonalMap)
+      }
+    }
+
+    testGeninLineOfSight(start, end, polygonalMap)
+    {
+      for (const polygon of polygonalMap.polygons)
+      {
+        console.log("inLineOfSight", polygon)
       }
     }
 }  // end class newPMStroll
