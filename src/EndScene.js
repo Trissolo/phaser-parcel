@@ -6,13 +6,13 @@ export default class EndScene extends Phaser.Scene {
   }
 
   create () {
-    this.add.image(400, 300, 'space');
+    this.add.image(40, 30, 'space');
 
-    this.add.text(400, 200, 'Game Over\n\n< menu >', {
+    this.add.text(40, 20, 'Game Over\n\n< menu >', {
       align: 'center',
       fill: 'white',
       fontFamily: 'sans-serif',
-      fontSize: 48
+      fontSize: 24
     })
       .setOrigin(0.5, 0);
 

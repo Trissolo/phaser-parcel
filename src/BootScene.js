@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
-import images from './assets/*.png';
+// import fontbia from './assets/font_bianco.png';
+// import xmlfontbia from './assets/font_bianco.xml';
 
 export default class BootScene extends Phaser.Scene {
   constructor () {
