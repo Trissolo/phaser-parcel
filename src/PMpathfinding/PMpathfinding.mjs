@@ -157,6 +157,7 @@ export default class PMpathfinding
           for (const polygonSide of EachPoligonSide(polygon))
           {
             //// DEBUG ////
+            this.scene.cameras.main.setBackgroundColor()
             this.debug.graphics.clear()
 
             this.debug.lineFromVecs(polygonSide.getPointA(), polygonSide.getPointB(), 0xa3ce27);
@@ -183,6 +184,7 @@ export default class PMpathfinding
 
             if (!ilof)
             {
+              this.scene.cameras.main.setBackgroundColor(0xbe2633)
               this.debug.lineFromVecs(polygonSide.getPointA(), polygonSide.getPointB(), 0xeb8931);
               this.debug.lineFromVecs(concaveA, concaveB, 0xacced2);
             }
