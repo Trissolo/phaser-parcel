@@ -149,7 +149,6 @@ export default class PMpathfinding
         //// DEBUG ////
         this.debug.lineFromVecs(concaveA, concaveB);
         let debuVar, distStart, distEnd, ilof;
-        // yield console.log("orc", ray)
 
         for (const polygon of polygonalMap.polygons)
         {
@@ -167,6 +166,9 @@ export default class PMpathfinding
 
             distStart = this.distanceToSegment(polygonSide, concaveA);
             distEnd = this.distanceToSegment(polygonSide, concaveB);
+
+            this.compareWays(distStart, distEnd, polygonSide, ray)
+
             if (debuVar)
             {
               this.debug.debugText.setText("Intersection!")
@@ -177,6 +179,7 @@ export default class PMpathfinding
             {
               this.debug.debugText.setText("NO Intersection!")
             }
+            
             this.debug.debugText.text+=`\ndistStart: ${distStart}\ndistEnd: ${distEnd}`;
 
             //quibus:
@@ -189,11 +192,38 @@ export default class PMpathfinding
               this.debug.lineFromVecs(concaveA, concaveB, 0xacced2);
             }
 
-            yield this.debug.debugText.text+= `\nin line of sight= ${ilof}`
+            yield this.debug.debugText.text+= `\nin line of sight= ${ilof}\n`+ this.compareWays(distStart, distEnd, polygonSide, ray)
           }
         }
         // this.testGeninLineOfSight(null, null, polygonalMap)
       }
+    }
+
+    compareWays(distStart, distEnd, polygonSide, ray)
+    {
+      const epsilon = 0.5;
+
+      const distStartText = `distStart > 0.5 ${distStart > epsilon}`;
+      const distEndText = `distEnd > 0.5 ${distEnd > epsilon}`;
+      const pointA = ray.getPointA();
+      const pointB = ray.getPointB();
+      const sideA = polygonSide.getPointA();
+      const sideB = polygonSide.getPointB();
+      const fuzzyA = `pointA fuzzy:\n${pointA.fuzzyEquals(sideA, epsilon)},\n${pointA.fuzzyEquals(sideB, epsilon)}`;// , ${distStart}`;
+      const fuzzyB = `pointB fuzzy:\n${pointB.fuzzyEquals(sideA, epsilon)},\n${pointB.fuzzyEquals(sideB, epsilon)}`;//, ${distEnd}`;
+
+      const sintA = (pointA.fuzzyEquals(sideA, epsilon)) || (pointA.fuzzyEquals(sideB, epsilon));
+      const sintB = (pointB.fuzzyEquals(sideA, epsilon)) || (pointB.fuzzyEquals(sideB, epsilon));
+
+      const oldWay = (distStart <= epsilon) || (distEnd <= epsilon);
+      // console.log(pointA.fuzzyEquals(sideA, epsilon), pointA.fuzzyEquals(sideB, epsilon))
+      // console.log(pointB.fuzzyEquals(sideA, epsilon), pointB.fuzzyEquals(sideB, epsilon))
+
+      const newWay = sintA || sintB
+      // return `${fuzzyA}\n${fuzzyB}\n${distStartText}, ${distEndText}`
+      return `OLD: ${oldWay}\nNEW: ${newWay}`
+
+
     }
 
     distanceToSegment(line, vec)
