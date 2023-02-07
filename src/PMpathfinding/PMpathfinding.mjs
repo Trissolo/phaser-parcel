@@ -1,6 +1,14 @@
 import PMpathfindingDebug from "./PMpathfindingDebug.mjs";
 import newVisMap from "./newVisMap.mjs";
 
+//helpers
+import setLineFromVectors from "./setLineFromVectors.mjs";
+
+const {BetweenPoints} = Phaser.Math.Distance
+// const {Polygon, Line} = Phaser.Geom
+const {GetMidPoint, GetNearestPoint} = Phaser.Geom.Line
+const {LineToLine} = Phaser.Geom.Intersects
+
 //generators:
 
 // ex: ary = ['A', 'B', 'C', 'D', 'E'];
@@ -29,12 +37,17 @@ function* EachVectorAndAdjacents(ary)
 // returns a new Phaser.Geom.Line
 function* EachPoligonSide({points})
 {
-    const polygonSide = new Phaser.Geom.Line()
+    const sidePointA = new Phaser.Math.Vector2();
+    const sidePointB = new Phaser.Math.Vector2();
+
+    // const polygonSide = new Phaser.Geom.Line()
     for (let i = 0, {length} = points, j = length - 1; i < length; j = i++)
-    {     
-      // console.log(i, j);
-      // yield graphics.lineBetween(points[i].x, points[i].y, points[j].x, points[j].y);
-      yield polygonSide.setTo(points[i].x, points[i].y, points[j].x, points[j].y);
+    {   
+    
+      yield {sidePointA: sidePointA.setTo(points[i].x, points[i].y), sidePointB: sidePointB.setTo(points[j].x, points[j].y)};
+      //.setTo(points[i].x, points[i].y), sidePointB.setTo(points[j].x, points[j].y)};
+
+      // yield polygonSide.setTo(points[i].x, points[i].y, points[j].x, points[j].y);
     }
 }
 
@@ -63,7 +76,12 @@ function* anyAgainstAllOthers(ary)
       yield {concaveA: ary[i], concaveB: ary[j]};
     }
   }
-};
+}
+
+// setLineFromVectors(line, va, vb)
+// {
+//   return line.setTo(va.x, va.y, vb.x, vb.y)
+// }
 
 export default class PMpathfinding
 {
@@ -87,7 +105,9 @@ export default class PMpathfinding
 
         this.out = new Phaser.Math.Vector2();
 
-        this.epsilon = 0.5;
+        this.oldEpsilon = 0.5;
+
+        this.epsilon = 0.03;
     }
 
     addPolygonalMap(aryOfNumberArys, name = "default")
@@ -139,67 +159,80 @@ export default class PMpathfinding
 
     *testGenConnectNodes(polygonalMap)
     {
+      const {debug} = this;
+
       const ray = new Phaser.Geom.Line();
-      //console.log("KEyS", ary);
+
+      const polygonSide = new Phaser.Geom.Line();
+
+      // iterate each node of the visibility map graph against any other node of the graph
+      // note that 'concaveA' and 'concaveB' are 'Vector2Like' objects, and NOT 'Phaser.Math.Vector2's
       for (const {concaveA, concaveB} of anyAgainstAllOthers([...polygonalMap.graph.keys()]))
       {
-        // basically, the old inLineOfS...
-        ray.setTo(concaveA.x, concaveA.y, concaveB.x, concaveB.y);
+        // DEBUG //
+        //       //
+        let distStart, distEnd;
+        let debugLineToLineIntersection, debugDistanceToSegmentA, debugDistanceToSegmentB, oldLoS, approxA, approxB;
+        //       //
+        // DEBUG //
 
-        //// DEBUG ////
-        this.debug.lineFromVecs(concaveA, concaveB);
-        let debuVar, distStart, distEnd, ilof;
 
+        // given two nodes and the line connecting them (ray), check if this line intersects with any side of any polygon of the visibility map:
+        setLineFromVectors(ray, concaveA, concaveB);
+
+        //loop starts here:
+        // note that 'sidePointA' and 'sidePointB' ARE 'Phaser.Math.Vector2's
         for (const polygon of polygonalMap.polygons)
         {
           // console.log("Other poly", polygon)
-          for (const polygonSide of EachPoligonSide(polygon))
+          for (const {sidePointA, sidePointB} of EachPoligonSide(polygon))
           {
+            // polygonSide.setTo(sidePointA.x, sidePointA.y, sidePointB.x, sidePointB.y);
+            setLineFromVectors(polygonSide, sidePointA, sidePointB);
+
             //// DEBUG ////
-            this.scene.cameras.main.setBackgroundColor()
-            this.debug.graphics.clear()
-
-            this.debug.lineFromVecs(polygonSide.getPointA(), polygonSide.getPointB(), 0xa3ce27);
-            this.debug.lineFromVecs(concaveA, concaveB, 0xffffff);
-
-            debuVar = Phaser.Geom.Intersects.LineToLine(ray, polygonSide, this.out)
-
-            distStart = this.distanceToSegment(polygonSide, concaveA);
-            distEnd = this.distanceToSegment(polygonSide, concaveB);
-
-            this.compareWays(distStart, distEnd, polygonSide, ray)
-
-            if (debuVar)
-            {
-              this.debug.debugText.setText("Intersection!")
-              // this.debug.lineFromVecs(polygonSide.getPointA(), polygonSide.getPointB(), 0xeb8931);
-              // this.debug.lineFromVecs(concaveA, concaveB, 0xacced2);
-            }
-            else
-            {
-              this.debug.debugText.setText("NO Intersection!")
-            }
+            debug.setBackgroundColor()
+            debug.graphics.clear()
+                     
+            debug.lineFromVecs(concaveA, concaveB, 0xfdffdf);
             
-            this.debug.debugText.text+=`\ndistStart: ${distStart}\ndistEnd: ${distEnd}`;
+            debug.lineFromVecs(sidePointA, sidePointB, 0xcadb99);
+            
 
-            //quibus:
-            ilof = !(debuVar && (distStart > 0.5) && (distEnd > 0.5));
+            debugLineToLineIntersection = LineToLine(ray, polygonSide, this.out);
+            
+            debugDistanceToSegmentA = this.distanceToSegment(polygonSide, concaveA) > 0.5;
+            debugDistanceToSegmentB = this.distanceToSegment(polygonSide, concaveB) > 0.5;
+            
+            // debug.setText(`LineToLine: ${debugLineToLineIntersection}\ndistSegA: ${debugDistanceToSegmentA}\ndistSegB: ${debugDistanceToSegmentB}`);
 
-            if (!ilof)
-            {
-              this.scene.cameras.main.setBackgroundColor(0xbe2633)
-              this.debug.lineFromVecs(polygonSide.getPointA(), polygonSide.getPointB(), 0xeb8931);
-              this.debug.lineFromVecs(concaveA, concaveB, 0xacced2);
-            }
+            // oldLoS = !(debugLineToLineIntersection && debugDistanceToSegmentA && debugDistanceToSegmentB);
+            
+            approxA = this.tempApproxEq(concaveA, sidePointA, sidePointB);
 
-            // yield this.debug.debugText.text+= `\nin line of sight= ${ilof}\n`+ this.compareWays(distStart, distEnd, polygonSide, ray)
-            // yield this.debug.debugText.text = this.compareWays(distStart, distEnd, polygonSide, ray)
+            approxB = this.tempApproxEq(concaveB, sidePointA, sidePointB)
+            //let testLoS = !(debugLineToLineIntersection && approx );
 
-          }
-        }
-        // this.testGeninLineOfSight(null, null, polygonalMap)
-      }
+            yield debug.setText(`axA: ${approxA}, axB: ${approxB}\ndsA: ${debugDistanceToSegmentA}, dsB: ${debugDistanceToSegmentB}`);
+            // yield debug.addText(`\napproxB: ${approxB}, dB: ${debugDistanceToSegmentB}`);
+
+
+
+            // approximately equal
+          
+          } // end EachPoligonSide loop
+        } // end polygons loop
+      } // end anyAgainstAllOthers loop
+
+    } // end testGenConnectNodes
+
+    tempApproxEq(concave, sidePointA, sidePointB)
+    {
+      const vec = new Phaser.Math.Vector2(concave);
+
+      return !vec.fuzzyEquals(sidePointA) && !vec.fuzzyEquals(sidePointB)
     }
+
 
     compareWays(distStart, distEnd, polygonSide, ray)
     {
@@ -223,9 +256,14 @@ export default class PMpathfinding
       const newWay = sintA || sintB;
       oldWay === newWay? true : console.log("***false".repeat(11))
       // return `${fuzzyA}\n${fuzzyB}\n${distStartText}, ${distEndText}`
-      return `Same Result: ${oldWay === newWay? ":)" : "****NO!****"}\nOLD: ${oldWay}\nNEW: ${newWay}`
+      
+      // return `Same Result: ${oldWay === newWay? ":)" : "****NO!****"}\nOLD: ${oldWay}\nNEW: ${newWay}`
 
+      // return `Same Result: ${oldWay === newWay? ":)" : "****NO!****"}\nOLD: ${oldWay}\nNEW: ${newWay}`
 
+      this.debug.debugText.text += `Same Result: ${oldWay === newWay}`;
+
+      return newWay
     }
 
     distanceToSegment(line, vec)
@@ -256,11 +294,4 @@ export default class PMpathfinding
   
     } //end distanceToSegment
 
-    testGeninLineOfSight(start, end, polygonalMap)
-    {
-      for (const polygon of polygonalMap.polygons)
-      {
-        console.log("inLineOfSight", polygon)
-      }
-    }
 }  // end class newPMStroll
