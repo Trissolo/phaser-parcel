@@ -180,7 +180,7 @@ export default class PMpathfinding
         // given two nodes and the line connecting them (ray), check if this line intersects with any side of any polygon of the visibility map:
         setLineFromVectors(ray, concaveA, concaveB);
 
-        //loop starts here:
+        //****Line-of-sight check starts here:****//
         // note that 'sidePointA' and 'sidePointB' ARE 'Phaser.Math.Vector2's
         for (const polygon of polygonalMap.polygons)
         {
@@ -213,12 +213,13 @@ export default class PMpathfinding
             approxB = this.tempApproxEq(concaveB, sidePointA, sidePointB)
             //let testLoS = !(debugLineToLineIntersection && approx );
 
-            yield debug.setText(`axA: ${approxA}, axB: ${approxB}\ndsA: ${debugDistanceToSegmentA}, dsB: ${debugDistanceToSegmentB}`);
-            // yield debug.addText(`\napproxB: ${approxB}, dB: ${debugDistanceToSegmentB}`);
-
-
-
-            // approximately equal
+            debug.setText(`axA: ${approxA}, axB: ${approxB}\ndsA: ${debugDistanceToSegmentA}, dsB: ${debugDistanceToSegmentB}`);
+            
+            debug.addText(`\nIsAdjacent: ${this.isAdjacent(concaveA, concaveB, sidePointA, sidePointB)}`);
+            
+            yield debug.addText(`\nintersect: ${debugLineToLineIntersection}`);
+            
+            
           
           } // end EachPoligonSide loop
         } // end polygons loop
@@ -226,6 +227,12 @@ export default class PMpathfinding
 
     } // end testGenConnectNodes
 
+    isAdjacent(rayA, rayB, sidePointA, sidePointB)
+    {
+      return sidePointA.fuzzyEquals(rayA, this.epsilon) || sidePointA.fuzzyEquals(rayB, this.epsilon) || sidePointB.fuzzyEquals(rayA, this.epsilon) || sidePointB.fuzzyEquals(rayB, this.epsilon);
+    }
+
+    // approximately equal
     tempApproxEq(concave, sidePointA, sidePointB)
     {
       const vec = new Phaser.Math.Vector2(concave);
