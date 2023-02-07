@@ -21,7 +21,7 @@ export default class PMpathfindingDebug
         this.graphics = this.scene.add.graphics({x:0, y:0}).setDepth(0);
 
 		//debug text		
-		this.debugText = this.scene.add.bitmapText(10, 2, 'bianco', 'Test!').setDepth(Number.MAX_SAFE_INTEGER).setTintFill(0x5689db);
+		this.debugText = this.scene.add.bitmapText(4, 1, 'bianco', 'Test!').setDepth(Number.MAX_SAFE_INTEGER).setTintFill(0x5689db);
 		// this.scene.add.text(10, 10, "-Debug Info-", {
         //     fontSize: "12px",
         //     fill: "gray"
@@ -40,7 +40,7 @@ export default class PMpathfindingDebug
 
 	lineFromVecs(vecA, vecB, color = CONSTANTS.edgeCol)
 	{
-		this.setLineColor(color)
+		this.setLineColor(color);
 
 		if (vecB)
 		{
@@ -107,6 +107,26 @@ export default class PMpathfindingDebug
 		this.scene.children.sendToBack(this.polygonalMapAsImage)
 		
 		graphics.clear()
+	}
+
+	setText(text)
+	{
+		this.debugText.setText(text);
+	}
+
+	addText(text)
+	{
+		this.debugText.text += text;
+	}
+
+	resetBackgroundColor()
+	{
+		this.scene.cameras.main.setBackgroundColor()
+	}
+
+	setBackgroundColor(hexCol)// = 0xff5678)
+	{
+		this.scene.cameras.main.setBackgroundColor(hexCol)
 	}
 
     clearTexture()
