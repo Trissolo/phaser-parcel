@@ -86,7 +86,7 @@ export default class PMpathfinding
         this.vertexB = new Phaser.Math.Vector2();
 
         this.out = new Phaser.Math.Vector2();
-        
+
         this.epsilon = 0.5;
     }
 
@@ -146,23 +146,81 @@ export default class PMpathfinding
         // basically, the old inLineOfS...
         ray.setTo(concaveA.x, concaveA.y, concaveB.x, concaveB.y);
 
-        this.debug.lineFromVecs(concaveA, concaveB)
+        //// DEBUG ////
+        this.debug.lineFromVecs(concaveA, concaveB);
+        let debuVar, distStart, distEnd, ilof;
         // yield console.log("orc", ray)
 
         for (const polygon of polygonalMap.polygons)
         {
-          console.log("inLineOfSight 2", polygon)
+          console.log("Other poly", polygon)
           for (const polygonSide of EachPoligonSide(polygon))
           {
+            //// DEBUG ////
             this.debug.graphics.clear()
-            yield this.debug.lineFromVecs(concaveA, concaveB, 0xffffff)
-            this.debug.lineFromVecs(polygonSide.getPointA(), polygonSide.getPointB(), 0x9a8954)
-            yield console.log("LineToLine", Phaser.Geom.Intersects.LineToLine(ray, polygonSide, this.out))
+
+            this.debug.lineFromVecs(polygonSide.getPointA(), polygonSide.getPointB(), 0xa3ce27);
+            this.debug.lineFromVecs(concaveA, concaveB, 0xffffff);
+
+            debuVar = Phaser.Geom.Intersects.LineToLine(ray, polygonSide, this.out)
+
+            distStart = this.distanceToSegment(polygonSide, concaveA);
+            distEnd = this.distanceToSegment(polygonSide, concaveB);
+            if (debuVar)
+            {
+              this.debug.debugText.setText("Intersection!")
+              // this.debug.lineFromVecs(polygonSide.getPointA(), polygonSide.getPointB(), 0xeb8931);
+              // this.debug.lineFromVecs(concaveA, concaveB, 0xacced2);
+            }
+            else
+            {
+              this.debug.debugText.setText("NO Intersection!")
+            }
+            this.debug.debugText.text+=`\ndistStart: ${distStart}\ndistEnd: ${distEnd}`;
+
+            //quibus:
+            ilof = !(debuVar && (distStart > 0.5) && (distEnd > 0.5));
+
+            if (!ilof)
+            {
+              this.debug.lineFromVecs(polygonSide.getPointA(), polygonSide.getPointB(), 0xeb8931);
+              this.debug.lineFromVecs(concaveA, concaveB, 0xacced2);
+            }
+
+            yield this.debug.debugText.text+= `\nin line of sight= ${ilof}`
           }
         }
         // this.testGeninLineOfSight(null, null, polygonalMap)
       }
     }
+
+    distanceToSegment(line, vec)
+    { 
+      const out = new Phaser.Math.Vector2()
+      Phaser.Geom.Line.GetNearestPoint(line, vec, out)
+  
+      // const xMin = Math.min(line.x1, line.x2)
+      // const xMax = Math.max(line.x1, line.x2)
+      // const yMin = Math.min(line.y1, line.y2)
+      // const yMax = Math.max(line.y1, line.y2)
+  
+      // if(out.x > xMax) { out.x = xMax }
+      // else if(out.x < xMin) { out.x = xMin }
+
+      // if(out.y > yMax) { out.y = yMax }
+      // else if(out.y < yMin) { out.y = yMin }
+  
+      //
+      // out.set( Phaser.Math.Clamp(out.x, Math.min(line.x1, line.x2), Math.max(line.x1, line.x2)),
+      //          Phaser.Math.Clamp(out.y, Math.min(line.y1, line.y2), Math.max(line.y1, line.y2))
+      // );
+      out.set(Phaser.Math.Clamp(out.x, Math.min(line.x1, line.x2), Math.max(line.x1, line.x2)),
+              Phaser.Math.Clamp(out.y, Math.min(line.y1, line.y2), Math.max(line.y1, line.y2))
+              );
+
+      return out.distance(vec)
+  
+    } //end distanceToSegment
 
     testGeninLineOfSight(start, end, polygonalMap)
     {

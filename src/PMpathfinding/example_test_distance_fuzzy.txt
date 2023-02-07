@@ -1,0 +1,93 @@
+class Example extends Phaser.Scene
+{
+    position;
+    out;
+    text;
+    line;
+    graphics;
+    pa;
+    pb;
+
+    create ()
+    {
+        this.graphics = this.add.graphics({ lineStyle: { width: 1, color: 0xaa00aa }, fillStyle: { color: 0x0000aa } });
+
+        this.line = new Phaser.Geom.Line(5, 107, 150, 120);
+
+        this.out = new Phaser.Math.Vector2();
+
+        this.pa = new Phaser.Math.Vector2();
+
+        this.pb = new Phaser.Math.Vector2();
+
+        this.text = this.add.text(4, 4, '');
+
+        this.position = 50;
+
+        this.input.on('pointermove', pointer =>
+        {
+
+            //this.line.x2 = pointer.x;
+            //this.line.y2 = pointer.y;
+            
+
+            this.calculate(pointer);
+        });
+
+        //this.calculate();
+    }
+/*
+    update ()
+    {
+        this.position += this.slope;
+
+        this.position = Phaser.Math.Clamp(this.position, 0, 100);
+
+        this.graphics.clear();
+
+        this.graphics.strokeLineShape(this.line);
+
+        const point = Phaser.Geom.Line.GetPoint(this.line, this.position / 100);
+
+        this.graphics.fillPointShape(point, 25);
+    }*/
+
+    calculate (pointer)
+    {
+        this.graphics.clear();
+
+        this.graphics.strokeLineShape(this.line);
+
+        Phaser.Geom.Line.GetNearestPoint(this.line, pointer, this.out)
+
+        
+
+        this.out.set(Phaser.Math.Clamp(this.out.x, Math.min(this.line.x1, this.line.x2), Math.max(this.line.x1, this.line.x2)),
+        Phaser.Math.Clamp(this.out.y, Math.min(this.line.y1, this.line.y2), Math.max(this.line.y1, this.line.y2)))
+
+        this.graphics.fillPointShape(this.out, 2);
+
+        this.text.setText([`x: ${this.out.x}, y: ${this.out.y}`,
+        `${this.out.distance(pointer)}`,
+        `mousex: ${pointer.x}`,
+        `mousey: ${pointer.y}`]
+        );
+        
+    }
+}
+
+const config = {
+    backgroundColor: '#2dab2d',
+    scale: {
+        mode: Phaser.Scale.NONE,
+        parent: 'phaser-example',
+        width: 160,
+        height: 144,
+        zoom: 4
+    },
+    type: Phaser.AUTO,
+    parent: 'phaser-example',
+    scene: Example
+};
+
+const game = new Phaser.Game(config);
