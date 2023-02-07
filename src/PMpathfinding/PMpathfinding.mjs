@@ -152,7 +152,7 @@ export default class PMpathfinding
 
         for (const polygon of polygonalMap.polygons)
         {
-          console.log("Other poly", polygon)
+          // console.log("Other poly", polygon)
           for (const polygonSide of EachPoligonSide(polygon))
           {
             //// DEBUG ////
@@ -192,7 +192,9 @@ export default class PMpathfinding
               this.debug.lineFromVecs(concaveA, concaveB, 0xacced2);
             }
 
-            yield this.debug.debugText.text+= `\nin line of sight= ${ilof}\n`+ this.compareWays(distStart, distEnd, polygonSide, ray)
+            // yield this.debug.debugText.text+= `\nin line of sight= ${ilof}\n`+ this.compareWays(distStart, distEnd, polygonSide, ray)
+            // yield this.debug.debugText.text = this.compareWays(distStart, distEnd, polygonSide, ray)
+
           }
         }
         // this.testGeninLineOfSight(null, null, polygonalMap)
@@ -202,26 +204,26 @@ export default class PMpathfinding
     compareWays(distStart, distEnd, polygonSide, ray)
     {
       const epsilon = 0.5;
+      const testEpsilon = 0.03;
 
-      const distStartText = `distStart > 0.5 ${distStart > epsilon}`;
-      const distEndText = `distEnd > 0.5 ${distEnd > epsilon}`;
+      // const distStartText = `distStart > 0.5 ${distStart > epsilon}`;
+      // const distEndText = `distEnd > 0.5 ${distEnd > epsilon}`;
+
       const pointA = ray.getPointA();
       const pointB = ray.getPointB();
       const sideA = polygonSide.getPointA();
       const sideB = polygonSide.getPointB();
-      const fuzzyA = `pointA fuzzy:\n${pointA.fuzzyEquals(sideA, epsilon)},\n${pointA.fuzzyEquals(sideB, epsilon)}`;// , ${distStart}`;
-      const fuzzyB = `pointB fuzzy:\n${pointB.fuzzyEquals(sideA, epsilon)},\n${pointB.fuzzyEquals(sideB, epsilon)}`;//, ${distEnd}`;
+      // const fuzzyA = `pointA fuzzy:\n${pointA.fuzzyEquals(sideA, epsilon)},\n${pointA.fuzzyEquals(sideB, epsilon)}`;// , ${distStart}`;
+      // const fuzzyB = `pointB fuzzy:\n${pointB.fuzzyEquals(sideA, epsilon)},\n${pointB.fuzzyEquals(sideB, epsilon)}`;//, ${distEnd}`;
 
-      const sintA = (pointA.fuzzyEquals(sideA, epsilon)) || (pointA.fuzzyEquals(sideB, epsilon));
-      const sintB = (pointB.fuzzyEquals(sideA, epsilon)) || (pointB.fuzzyEquals(sideB, epsilon));
+      const sintA = (pointA.fuzzyEquals(sideA, testEpsilon)) || (pointA.fuzzyEquals(sideB, testEpsilon));
+      const sintB = (pointB.fuzzyEquals(sideA, testEpsilon)) || (pointB.fuzzyEquals(sideB, testEpsilon));
 
       const oldWay = (distStart <= epsilon) || (distEnd <= epsilon);
-      // console.log(pointA.fuzzyEquals(sideA, epsilon), pointA.fuzzyEquals(sideB, epsilon))
-      // console.log(pointB.fuzzyEquals(sideA, epsilon), pointB.fuzzyEquals(sideB, epsilon))
-
-      const newWay = sintA || sintB
+      const newWay = sintA || sintB;
+      oldWay === newWay? true : console.log("***false".repeat(11))
       // return `${fuzzyA}\n${fuzzyB}\n${distStartText}, ${distEndText}`
-      return `OLD: ${oldWay}\nNEW: ${newWay}`
+      return `Same Result: ${oldWay === newWay? ":)" : "****NO!****"}\nOLD: ${oldWay}\nNEW: ${newWay}`
 
 
     }
