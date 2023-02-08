@@ -119,6 +119,11 @@ export default class PMpathfindingDebug
 		this.debugText.text += text;
 	}
 
+	setWordTint(word, count, color)
+	{
+		this.debugText.setWordTint(word, count, true, color)
+	}
+
 	resetBackgroundColor()
 	{
 		this.scene.cameras.main.setBackgroundColor()

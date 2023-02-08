@@ -37,14 +37,14 @@ function* EachVectorAndAdjacents(ary)
 // returns a new Phaser.Geom.Line
 function* EachPoligonSide({points})
 {
-    const sidePointA = new Phaser.Math.Vector2();
-    const sidePointB = new Phaser.Math.Vector2();
+    // const sidePointA = new Phaser.Math.Vector2();
+    // const sidePointB = new Phaser.Math.Vector2();
 
     // const polygonSide = new Phaser.Geom.Line()
     for (let i = 0, {length} = points, j = length - 1; i < length; j = i++)
     {   
     
-      yield {sidePointA: sidePointA.setTo(points[i].x, points[i].y), sidePointB: sidePointB.setTo(points[j].x, points[j].y)};
+      yield {sidePointA: points[i], sidePointB: points[j]};
       //.setTo(points[i].x, points[i].y), sidePointB.setTo(points[j].x, points[j].y)};
 
       // yield polygonSide.setTo(points[i].x, points[i].y, points[j].x, points[j].y);
@@ -171,8 +171,19 @@ export default class PMpathfinding
       {
         // DEBUG //
         //       //
-        let distStart, distEnd;
-        let debugLineToLineIntersection, debugDistanceToSegmentA, debugDistanceToSegmentB, oldLoS, approxA, approxB;
+        let distStart;
+        let distEnd;
+        let debugLineToLineIntersection;
+        let debugDistanceToSegmentA;
+        let debugDistanceToSegmentB;
+        let oldLoS;
+        let debugFuzzyA;
+        let debugFuzzyB;
+        let fuzzyLoS;
+        let approxA;
+        let approxB;
+
+        let inLoS = true;
         //       //
         // DEBUG //
 
@@ -181,12 +192,14 @@ export default class PMpathfinding
         setLineFromVectors(ray, concaveA, concaveB);
 
         //****Line-of-sight check starts here:****//
-        // note that 'sidePointA' and 'sidePointB' ARE 'Phaser.Math.Vector2's
+        // note that 'sidePointA' and 'sidePointB' Vec2Like Objects, NOT 'Phaser.Math.Vector2's
         for (const polygon of polygonalMap.polygons)
         {
           // console.log("Other poly", polygon)
           for (const {sidePointA, sidePointB} of EachPoligonSide(polygon))
           {
+            const {points: debPoints} = polygon;
+            debug.setText(`Poly ${polygonalMap.polygons.indexOf(polygon)} / ${polygonalMap.polygons.length -1}\n V1 ${debPoints.indexOf(sidePointB)} - V2 ${debPoints.indexOf(sidePointA)}\n`);
             // polygonSide.setTo(sidePointA.x, sidePointA.y, sidePointB.x, sidePointB.y);
             setLineFromVectors(polygonSide, sidePointA, sidePointB);
 
@@ -203,21 +216,43 @@ export default class PMpathfinding
             
             debugDistanceToSegmentA = this.distanceToSegment(polygonSide, concaveA) > 0.5;
             debugDistanceToSegmentB = this.distanceToSegment(polygonSide, concaveB) > 0.5;
+
+            debugFuzzyA = this.itsNear(concaveA, concaveB, sidePointA, sidePointB)
             
             // debug.setText(`LineToLine: ${debugLineToLineIntersection}\ndistSegA: ${debugDistanceToSegmentA}\ndistSegB: ${debugDistanceToSegmentB}`);
+            // debug.setText(`distSegA: ${debugDistanceToSegmentA}\ndistSegB: ${debugDistanceToSegmentB}`);
 
+            debug.addText(`${debugDistanceToSegmentA} ${debugDistanceToSegmentB}\n`);
+            oldLoS = debugLineToLineIntersection && debugDistanceToSegmentA && debugDistanceToSegmentB;
+
+            debug.addText(`MTEST: ${debugDistanceToSegmentA && debugDistanceToSegmentB} -> ${!debugFuzzyA}`)
+
+            if (oldLoS)
+            {
+              debug.addText("\n *** NOT in LoS! ***");
+              debug.setBackgroundColor(0x987634);
+              yield true
+              break;
+            }
+            else
+            {
+              debug.addText(`\n......`);
+              debug.setBackgroundColor();
+
+              yield true
+            }
             // oldLoS = !(debugLineToLineIntersection && debugDistanceToSegmentA && debugDistanceToSegmentB);
             
-            approxA = this.tempApproxEq(concaveA, sidePointA, sidePointB);
+            // approxA = this.tempApproxEq(concaveA, sidePointA, sidePointB);
 
-            approxB = this.tempApproxEq(concaveB, sidePointA, sidePointB)
-            //let testLoS = !(debugLineToLineIntersection && approx );
+            // approxB = this.tempApproxEq(concaveB, sidePointA, sidePointB)
+            // //let testLoS = !(debugLineToLineIntersection && approx );
 
-            debug.setText(`axA: ${approxA}, axB: ${approxB}\ndsA: ${debugDistanceToSegmentA}, dsB: ${debugDistanceToSegmentB}`);
+            // // debug.setText(`axA: ${approxA}, axB: ${approxB}\ndsA: ${debugDistanceToSegmentA}, dsB: ${debugDistanceToSegmentB}`);
             
-            debug.addText(`\nIsAdjacent: ${this.isAdjacent(concaveA, concaveB, sidePointA, sidePointB)}`);
+            // debug.addText(`\nIsAdjacent: ${this.isAdjacent(concaveA, concaveB, sidePointA, sidePointB)}`);
             
-            yield debug.addText(`\nintersect: ${debugLineToLineIntersection}`);
+            // yield debug.addText(`\nintersect: ${debugLineToLineIntersection}`);
             
             
           
@@ -227,9 +262,29 @@ export default class PMpathfinding
 
     } // end testGenConnectNodes
 
+    itsNear(rayA, rayB, sideA, sideB, recycledVec = new Phaser.Math.Vector2())
+    {
+      // vec.setFromObject(rayPoint);
+      return (recycledVec.setFromObject(rayA, this.epsilon).fuzzyEquals(sideA, this.epsilon) || recycledVec.setFromObject(rayB).fuzzyEquals(sideB, this.epsilon)) || (recycledVec.setFromObject(rayB).fuzzyEquals(sideA, this.epsilon) || recycledVec.setFromObject(rayA).fuzzyEquals(sideB, this.epsilon));
+    }
+
     isAdjacent(rayA, rayB, sidePointA, sidePointB)
     {
-      return sidePointA.fuzzyEquals(rayA, this.epsilon) || sidePointA.fuzzyEquals(rayB, this.epsilon) || sidePointB.fuzzyEquals(rayA, this.epsilon) || sidePointB.fuzzyEquals(rayB, this.epsilon);
+      //before:
+      // return sidePointA.fuzzyEquals(rayA, this.epsilon) || sidePointA.fuzzyEquals(rayB, this.epsilon) || sidePointB.fuzzyEquals(rayA, this.epsilon) || sidePointB.fuzzyEquals(rayB, this.epsilon);
+
+      // after:
+      const va = new Phaser.Math.Vector2(rayA);
+      const vb = new Phaser.Math.Vector2(rayB)
+
+console.log("va == a", va.fuzzyEquals(sidePointA, this.epsilon));
+console.log("vb == b", vb.fuzzyEquals(sidePointB, this.epsilon));
+
+console.log("va == b", va.fuzzyEquals(sidePointB, this.epsilon));
+console.log("vb == a", vb.fuzzyEquals(sidePointA, this.epsilon));
+
+      return !va.fuzzyEquals(sidePointA, this.epsilon && !vb.fuzzyEquals(sidePointB, this.epsilon)) || (!va.fuzzyEquals(sidePointB, this.epsilon) && !vb.fuzzyEquals(sidePointA, this.epsilon));
+
     }
 
     // approximately equal
