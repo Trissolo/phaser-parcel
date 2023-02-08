@@ -227,11 +227,27 @@ export default class PMpathfinding
 
             debug.addText(`MTEST: ${debugDistanceToSegmentA && debugDistanceToSegmentB} -> ${!debugFuzzyA}`)
 
+
+            if ((debugDistanceToSegmentA && debugDistanceToSegmentB) === !debugFuzzyA)
+            {
+              console.log("orco")
+              debug.setBackgroundColor(0xffff75);
+            }
+            else
+            {
+              console.log((debugDistanceToSegmentA && debugDistanceToSegmentB) === debugFuzzyA)
+              debug.setBackgroundColor(0x45bddf);
+            }
+             yield true
+
+
+
+
             if (oldLoS)
             {
               debug.addText("\n *** NOT in LoS! ***");
               debug.setBackgroundColor(0x987634);
-              yield true
+              // yield true
               break;
             }
             else
@@ -239,8 +255,10 @@ export default class PMpathfinding
               debug.addText(`\n......`);
               debug.setBackgroundColor();
 
-              yield true
+              // yield true
             }
+
+            
             // oldLoS = !(debugLineToLineIntersection && debugDistanceToSegmentA && debugDistanceToSegmentB);
             
             // approxA = this.tempApproxEq(concaveA, sidePointA, sidePointB);
