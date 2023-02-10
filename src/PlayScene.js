@@ -18,45 +18,59 @@ export default class PlayScene extends Phaser.Scene {
 
   create ()
   {
-    // this.add.image(400, 300, 'space');
+    this.player = this.add.triangle(80, 32, 4, 16, 0, 0, 8, 0, 0x88bb88)//0xdb78ca)
+        .setOrigin(0.5, 1)
+        .setDepth(2);
 
-    // this.add.bitmapText(10, 10, 'bianco', 'Test!').setDepth(Number.MAX_SAFE_INTEGER)
+        // a circle, just to visualize the end point
+    this.dest = this.add.circle(40, 90, 2, 0xea5d7c).setDepth(2);
 
-    this.pmStroll = new PMpathfinding(this, true)
+    this.input.on('pointerdown', this.placeThings, this);
 
-    this.pmStroll.addPolygonalMap(gimpPolys[0].coords)
+    this.pmStroll = new PMpathfinding(this, true);
 
-    this.polyMap = this.pmStroll.getPolygonalMap('default')
+    this.pmStroll.addPolygonalMap(gimpPolys[0].coords);
 
-    this.pmStroll.debug.showAsImage(this.polyMap)
+    this.polyMap = this.pmStroll.getPolygonalMap('default');
 
-    console.log(this.polyMap)
+    this.pmStroll.debug.showAsImage(this.polyMap);
 
-    console.log("Exec testGenConnectNodes:")
+    console.log(this.polyMap);
+
+    console.log("Exec testGenConnectNodes:");
 
     // for (const por of this.pmStroll.testGenConnectNodes(this.polyMap))
     // {
     //   console.log("por",por)
     // }
     // this.pmStroll.debug.lineFromVecs(this.polyMap.polygons[0].points[0], this.polyMap.polygons[1].points[1])
-     this.gag = this.pmStroll.testGenConnectNodes(this.polyMap);
 
-     this.input.keyboard.on("keydown-Z", () => {this.gag.next()})
+    this.gag = this.pmStroll.oldInLineOfSight(this.player, this.dest, this.polyMap);
 
+    //  this.gag = this.pmStroll.testGenConnectNodes(this.polyMap);
+     
 
+     this.input.keyboard.on("keydown-Z", () => {this.gag.next()});
 
-    // const pa = new Phaser.Geom.Polygon(gimpPolys[0].coords[0])
-    // const ob = new Phaser.Geom.Polygon(gimpPolys[0].coords[1])
-
-    // const gr = this.add.graphics()
-
-    // gr.fillStyle(0x675, 1);
-    // gr.fillPoints(pa.points)
-
-    // gr.fillStyle(0x432675, 1);
-    // gr.fillPoints(ob.points)
     
   }  // end create
+
+  placeThings(pointer)
+  {
+    if (pointer.middleButtonDown())
+    {
+      this.player.setPosition(pointer.worldX, pointer.worldY);
+    }
+
+    else 
+    {
+      if (pointer.rightButtonDown())
+      {
+
+        this.dest.setPosition(pointer.worldX, pointer.worldY);
+      }
+    }
+  }
 
   // update () {}
 }
