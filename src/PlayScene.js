@@ -47,10 +47,10 @@ export default class PlayScene extends Phaser.Scene {
 
     this.gag = this.pmStroll.oldInLineOfSight(this.player, this.dest, this.polyMap);
 
-    //  this.gag = this.pmStroll.testGenConnectNodes(this.polyMap);
+    // this.gag = this.pmStroll.testGenConnectNodes(this.polyMap);
      
-
-     this.input.keyboard.on("keydown-Z", () => {this.gag.next()});
+    //
+    this.input.keyboard.on("keydown-Z", () => {this.gag.next()});
 
     
   }  // end create

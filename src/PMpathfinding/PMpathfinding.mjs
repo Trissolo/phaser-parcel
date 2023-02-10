@@ -1,7 +1,8 @@
 import PMpathfindingDebug from "./PMpathfindingDebug.mjs";
 import newVisMap from "./newVisMap.mjs";
 
-import testGraph from "./testGraph.mjs";
+// import testGraphHelper from "./testGraph.mjs";
+import testGraphHelper from "./testGraphHelper.mjs";
 
 //helpers
 import setLineFromVectors from "./setLineFromVectors.mjs";
@@ -114,6 +115,8 @@ export default class PMpathfinding
         this.oldEpsilon = 0.5;
 
         this.epsilon = 0.03;
+
+        this.splitAmount = 5;
     }
 
     addPolygonalMap(aryOfNumberArys, name = "default")
@@ -124,7 +127,7 @@ export default class PMpathfinding
 
         this.polygonalMaps.set(name, pm)
 
-        console.dir(pm)
+        console.dir("PM", pm)
 
         return pm
     }
@@ -152,7 +155,8 @@ export default class PMpathfinding
   
           if( (vertexB.cross(vertexA) < 0) === isFirstPoly)
           {
-            polygonalMap.graph.set(curr, [])
+            //  polygonalMap.graph.set(curr, [])
+            testGraphHelper.addNode(curr, polygonalMap.graph)
           }
   
         }
@@ -167,9 +171,11 @@ export default class PMpathfinding
     {
       const {debug} = this;
 
+      //the segment to check against any polygon side
       const ray = new Phaser.Geom.Line();
       setLineFromVectors(ray, start, end);
 
+      //One side of current polygon
       const polygonSide = new Phaser.Geom.Line();
 
 
@@ -194,6 +200,58 @@ export default class PMpathfinding
           }
 
           yield null;
+
+          if (LineToLine(ray, polygonSide, this.out) && !this.itsNear(start, end, sidePointA, sidePointB))
+          {
+            //return false
+          }
+
+          const rayPoints = ray.getPoints(this.splitAmount)
+          rayPoints[0] = GetMidPoint(ray)
+          
+          let fagain = true;
+          for (const [num, poly] of polygonalMap.polygons.entries())
+          {
+            console.log("NPOLY", num, poly)
+            for (const point of rayPoints)
+            {
+              const ppolyCheck = poly.contains(point.x, point.y);
+              if (poly.contains(point.x, point.y) === fagain)
+              {
+                debug.setBackgroundColor()
+                debug.setFillColor(0xbbdd89)
+                debug.showVector(point)
+              }
+              else
+              {
+                debug.alert("WRONG - not IOS", true, 0xffff78)
+                debug.setFillColor(0xff3445)
+                debug.showVector(point)
+                // debug.alert("ZZZ")
+                // debug.reset()
+              }
+              yield null
+
+              // console.log(`poly[${num}] -> ${ppolyCheck}, fagain ${fagain}, res: ${fagain===ppolyCheck}`);
+
+            }
+            fagain = false;
+              
+          }
+          // explicit check
+          // let first = true;
+          // for (const polygon of polygonalMap.polygons)
+          // {
+          //   console.log(first, polygon)
+          //   if (rayPoints.some(ele => polygon.contains(ele.x, ele.y) === first))
+          //   {
+          //     console.log(polygon.contains(e.x, e.y) === first)
+          //     // return false
+          //   }
+          //   first = false
+          // }
+
+
         }
       } //end EachPoligonSide
 
@@ -290,8 +348,8 @@ export default class PMpathfinding
               debug.addText("\n *** NOT in LoS! ***");
               debug.setBackgroundColor(0x987634);
 
-              yield true
-              break;
+              // yield true
+              // break;
             }
             else
             {
@@ -301,6 +359,10 @@ export default class PMpathfinding
               // yield true
             }
             debug.addText(`\nSimp Inters: ${debugLineToLineIntersection}`);
+            debug.debugText.clearTint();
+            // debug.debugText.setTintFill(0x666666);
+            debug.debugText.setWordTint("true", -1, true, 0x98ca98);
+            // debug.debugText.setWordTint("false", -1, true, 0xac56ff);
             yield true
 
             

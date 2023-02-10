@@ -1,24 +1,24 @@
 import Phaser from "phaser";
 
-export default class testGraph
+export default class testGraphHelper
 {
-    addNode(node, graph = new Map())
+    static addNode(node, graph)
     {
         graph.set(node, new Map());
         // return node
     }
 
-    edgesContainerOf(node, graph)
+    static edgesContainerOf(node, graph)
     {
         return graph.get(node);
     }
 
-    edgeAlreadyExists(node, neighbor, graph)
+    static edgeAlreadyExists(node, neighbor, graph)
     {
         return graph.has(node) && this.edgesContainerOf(node, graph).has(neighbor);
     }
 
-    connect(node, neighbor, graph)
+    static connect(node, neighbor, graph)
     {
         if (!this.edgeAlreadyExists(node, neighbor, graph))
         {
@@ -28,7 +28,7 @@ export default class testGraph
         }
     }
 
-    cloneGraph(graph)
+    static cloneGraph(graph)
     {
         const cloneGraph = new Map();
 
