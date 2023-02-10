@@ -1,6 +1,8 @@
 import PMpathfindingDebug from "./PMpathfindingDebug.mjs";
 import newVisMap from "./newVisMap.mjs";
 
+import testGraph from "./testGraph.mjs";
+
 //helpers
 import setLineFromVectors from "./setLineFromVectors.mjs";
 
@@ -34,7 +36,7 @@ function* EachVectorAndAdjacents(ary)
 
 ///
 // pass in a polygon
-// returns a new Phaser.Geom.Line
+// returns two vertices of each side of the rectangle
 function* EachPoligonSide({points})
 {
     // const sidePointA = new Phaser.Math.Vector2();
@@ -52,10 +54,10 @@ function* EachPoligonSide({points})
 }
 
 ////anyAgainstAllOthers (in graph)
-// returns concaveA: current point, concaveB: any other point;
+// returns (an array of) two points: the corrent one, and each of the remaining vertices
 function* anyAgainstAllOthers(ary)
 {
-  console.log("anyAgainstAllOthers arr:", ary)
+  // console.log("anyAgainstAllOthers arr:", ary)
   // const {length} = ary;
   // const lenMinusOne = ary.length - 1;
   // let currentNodeIdx, anyOtherNodeIdx;
@@ -69,11 +71,15 @@ function* anyAgainstAllOthers(ary)
   //         yield {concaveA: ary[currentNodeIdx], concaveB: ary[anyOtherNodeIdx]};//, idxA: currentNodeIdx, idxB: anyOtherNodeIdx};
   //       }
   //     }
-  for (let i = 0, len = ary.length; i < len; i++)
+  const jMax = ary.length;
+  const iMax = jMax - 1;
+  // const res = [];
+
+  for (let i = 0; i < iMax; i++)
   {
-    for (let j = i + 1; j < len; j++)
+    for (let j = i + 1; j < jMax; j++)
     {
-      yield {concaveA: ary[i], concaveB: ary[j]};
+      yield [ ary[i], ary[j] ];
     }
   }
 }
@@ -203,7 +209,7 @@ export default class PMpathfinding
 
       // iterate each node of the visibility map graph against any other node of the graph
       // note that 'concaveA' and 'concaveB' are 'Vector2Like' objects, and NOT 'Phaser.Math.Vector2's
-      for (const {concaveA, concaveB} of anyAgainstAllOthers([...polygonalMap.graph.keys()]))
+      for (const [concaveA, concaveB] of anyAgainstAllOthers([...polygonalMap.graph.keys()]))
       {
         // DEBUG //
         //       //
@@ -283,6 +289,7 @@ export default class PMpathfinding
             {
               debug.addText("\n *** NOT in LoS! ***");
               debug.setBackgroundColor(0x987634);
+
               yield true
               break;
             }
@@ -291,9 +298,10 @@ export default class PMpathfinding
               debug.addText(`\n......`);
               debug.setBackgroundColor();
 
-              yield true
+              // yield true
             }
-            // yield true
+            debug.addText(`\nSimp Inters: ${debugLineToLineIntersection}`);
+            yield true
 
             
             // oldLoS = !(debugLineToLineIntersection && debugDistanceToSegmentA && debugDistanceToSegmentB);
@@ -319,6 +327,15 @@ export default class PMpathfinding
 
     itsNear(rayA, rayB, sideA, sideB, recycledVec = new Phaser.Math.Vector2())
     {
+      // bullshit (before that we need an "inSamePoly" check):
+      // let stato = "";
+      // if (rayA === sideB && rayB === sideA){stato ="Same vec!"}
+      // else
+      // {
+      //   if(rayB === sideB ||rayA === sideA || rayA === sideB || rayB === sideA){stato="Adjacent"}
+      // }
+      // console.log(`${stato} ra:${JSON.stringify(rayA)}, rb${JSON.stringify(rayB)}, sA${JSON.stringify(sideA)}, sB${JSON.stringify(sideB)}`)
+      
       // vec.setFromObject(rayPoint);
       return (recycledVec.setFromObject(rayA, this.epsilon).fuzzyEquals(sideA, this.epsilon) || recycledVec.setFromObject(rayB).fuzzyEquals(sideB, this.epsilon)) || (recycledVec.setFromObject(rayB).fuzzyEquals(sideA, this.epsilon) || recycledVec.setFromObject(rayA).fuzzyEquals(sideB, this.epsilon));
     }
