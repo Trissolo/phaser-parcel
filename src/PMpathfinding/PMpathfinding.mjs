@@ -157,6 +157,28 @@ export default class PMpathfinding
   
     }
 
+    *oldInLineOfSight(start, end, polygonalMap)
+    {
+      const {debug} = this;
+
+      const ray = new Phaser.Geom.Line();
+      setLineFromVectors(ray, start, end);
+
+      for (const polygon of polygonalMap.polygons)
+      {
+        // console.log("Other poly", polygon)
+        for (const {sidePointA, sidePointB} of EachPoligonSide(polygon))
+        {
+          debug.graphics.clear();
+          debug.lineFromVecs(start, end, 0xfdffdf);
+            
+          debug.lineFromVecs(sidePointA, sidePointB, 0xcadb99);
+          yield null;
+        }
+      } //end EachPoligonSide
+
+    } // end oldInLineOfSight
+
     *testGenConnectNodes(polygonalMap)
     {
       const {debug} = this;
@@ -227,18 +249,18 @@ export default class PMpathfinding
 
             debug.addText(`MTEST: ${debugDistanceToSegmentA && debugDistanceToSegmentB} -> ${!debugFuzzyA}`)
 
-
-            if ((debugDistanceToSegmentA && debugDistanceToSegmentB) === !debugFuzzyA)
-            {
-              console.log("orco")
-              debug.setBackgroundColor(0xffff75);
-            }
-            else
-            {
-              console.log((debugDistanceToSegmentA && debugDistanceToSegmentB) === debugFuzzyA)
-              debug.setBackgroundColor(0x45bddf);
-            }
-             yield true
+            // test ok, it seems!
+            // if ((debugDistanceToSegmentA && debugDistanceToSegmentB) === !debugFuzzyA)
+            // {
+            //   console.log("orco")
+            //   debug.setBackgroundColor(0xffff75);
+            // }
+            // else
+            // {
+            //   console.log((debugDistanceToSegmentA && debugDistanceToSegmentB) === debugFuzzyA)
+            //   debug.setBackgroundColor(0x45bddf);
+            // }
+            // yield true
 
 
 
@@ -247,7 +269,7 @@ export default class PMpathfinding
             {
               debug.addText("\n *** NOT in LoS! ***");
               debug.setBackgroundColor(0x987634);
-              // yield true
+              yield true
               break;
             }
             else
@@ -255,8 +277,9 @@ export default class PMpathfinding
               debug.addText(`\n......`);
               debug.setBackgroundColor();
 
-              // yield true
+              yield true
             }
+            // yield true
 
             
             // oldLoS = !(debugLineToLineIntersection && debugDistanceToSegmentA && debugDistanceToSegmentB);
@@ -295,11 +318,11 @@ export default class PMpathfinding
       const va = new Phaser.Math.Vector2(rayA);
       const vb = new Phaser.Math.Vector2(rayB)
 
-console.log("va == a", va.fuzzyEquals(sidePointA, this.epsilon));
-console.log("vb == b", vb.fuzzyEquals(sidePointB, this.epsilon));
+      console.log("va == a", va.fuzzyEquals(sidePointA, this.epsilon));
+      console.log("vb == b", vb.fuzzyEquals(sidePointB, this.epsilon));
 
-console.log("va == b", va.fuzzyEquals(sidePointB, this.epsilon));
-console.log("vb == a", vb.fuzzyEquals(sidePointA, this.epsilon));
+      console.log("va == b", va.fuzzyEquals(sidePointB, this.epsilon));
+      console.log("vb == a", vb.fuzzyEquals(sidePointA, this.epsilon));
 
       return !va.fuzzyEquals(sidePointA, this.epsilon && !vb.fuzzyEquals(sidePointB, this.epsilon)) || (!va.fuzzyEquals(sidePointB, this.epsilon) && !vb.fuzzyEquals(sidePointA, this.epsilon));
 

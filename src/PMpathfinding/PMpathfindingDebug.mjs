@@ -21,7 +21,7 @@ export default class PMpathfindingDebug
         this.graphics = this.scene.add.graphics({x:0, y:0}).setDepth(0);
 
 		//debug text		
-		this.debugText = this.scene.add.bitmapText(4, 1, 'bianco', 'Test!').setDepth(Number.MAX_SAFE_INTEGER).setTintFill(0x5689db);
+		this.debugText = this.scene.add.bitmapText(4, 1, 'bianco', 'Test!').setDepth(Number.MAX_SAFE_INTEGER).setTintFill(0x666666);
 		// this.scene.add.text(10, 10, "-Debug Info-", {
         //     fontSize: "12px",
         //     fill: "gray"
