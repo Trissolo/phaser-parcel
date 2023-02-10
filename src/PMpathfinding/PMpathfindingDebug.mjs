@@ -134,6 +134,30 @@ export default class PMpathfindingDebug
 		this.scene.cameras.main.setBackgroundColor(hexCol)
 	}
 
+	alert(message, clearText = true, bgCol = 0x987634)
+	{
+		this.setBackgroundColor(bgCol);
+
+		if (message)
+		{
+			if (clearText)
+			{
+				this.setText(message);
+			}
+			else
+			{
+				this.addText(message);
+			}
+		}
+
+	}
+
+	reset()
+	{
+		this.resetBackgroundColor()
+		this.graphics.clear()
+	}
+
     clearTexture()
 	{
 		if (this.scene.textures.exists(CONSTANTS.TextureKey))

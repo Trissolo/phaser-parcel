@@ -164,15 +164,29 @@ export default class PMpathfinding
       const ray = new Phaser.Geom.Line();
       setLineFromVectors(ray, start, end);
 
+      const polygonSide = new Phaser.Geom.Line();
+
+
       for (const polygon of polygonalMap.polygons)
       {
         // console.log("Other poly", polygon)
         for (const {sidePointA, sidePointB} of EachPoligonSide(polygon))
         {
-          debug.graphics.clear();
-          debug.lineFromVecs(start, end, 0xfdffdf);
-            
+          debug.reset();
+          debug.lineFromVecs(start, end, 0xfdffdf);          
           debug.lineFromVecs(sidePointA, sidePointB, 0xcadb99);
+
+          setLineFromVectors(polygonSide, sidePointA, sidePointB)
+
+          if (LineToLine(ray, polygonSide, this.out))
+          {
+            debug.alert('NOT in LoS!')
+          }
+          else
+          {
+            // debug.reset()
+          }
+
           yield null;
         }
       } //end EachPoligonSide
