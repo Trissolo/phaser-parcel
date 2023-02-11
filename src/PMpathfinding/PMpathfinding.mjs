@@ -192,24 +192,14 @@ export default class PMpathfinding
       // const {polygons} = polygonalMap
       const {graph} = polygonalMap;
 
-      //console.log("%ccheck ADJ:[polygons]", DBG1, polygons, polygons.length)
-
-      // for (let polyIdx = polygons.length; polyIdx--;/**/)
       for (const polygon of polygonalMap.polygons)
       {
-        console.log("KADJ:", polygon)
-        // const {points} = polygons[polyIdx]
         // EachPoligonSide
         for (const {sidePointA, sidePointB} of EachPoligonSide(polygon))
-        // for (let i = -1, len = points.length, j = len - 1, {graph} = polygonalMap, vertexA, vertexB; ++i < len; j = i)
         {
-          // vertexA = points[i]
-          // vertexB = points[j]
-          // if (nodeMap.has(vertexA) && nodeMap.has(vertexB))
           if (graph.has(sidePointA) && graph.has(sidePointB))
           {
             testGraphHelper.addEdge(sidePointA, sidePointB, heuristic(sidePointA, sidePointB), graph)
-            // graph.insertEdge(sidePointA, sidePointB, heuristic(sidePointA, sidePointB))
           }
         }
       }
