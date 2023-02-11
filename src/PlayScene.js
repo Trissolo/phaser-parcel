@@ -5,6 +5,10 @@ import xmlfontbia from './assets/font_bianco.xml';
 import gimpPolys from './PMpathfinding/gimpPolys.mjs';
 import PMpathfinding from './PMpathfinding/PMpathfinding.mjs';
 
+
+//testing PQ
+import PriorityQueue from './PMpathfinding/pfalgorithms/PriorityQueue.mjs';
+
 export default class PlayScene extends Phaser.Scene {
   constructor ()
   {
@@ -22,7 +26,7 @@ export default class PlayScene extends Phaser.Scene {
         .setOrigin(0.5, 1)
         .setDepth(2);
 
-        // a circle, just to visualize the end point
+    // a circle, just to visualize the end point
     this.dest = this.add.circle(40, 90, 2, 0xea5d7c).setDepth(2);
 
     this.input.on('pointerdown', this.placeThings, this);
@@ -48,9 +52,43 @@ export default class PlayScene extends Phaser.Scene {
     // this.gag = this.pmStroll.oldInLineOfSight(this.player, this.dest, this.polyMap);
 
     // this.gag = this.pmStroll.testGenConnectNodes(this.polyMap);
-     
-    this.gag = this.pmStroll.drawPolyMap(this.polyMap)
-    this.input.keyboard.on("keydown-Z", () => {this.gag.next()});
+    
+    //next two lines temporarily commented out
+    // this.gag = this.pmStroll.drawPolyMap(this.polyMap)
+    // this.input.keyboard.on("keydown-Z", () => {this.gag.next()});
+
+    //test pq
+    const refAry = [
+      {x: 0, y: 0},
+      {x: 1, y: 1},
+      {x: 2, y: 2},
+      {x: 3, y: 3},
+      {x: 4, y: 4}
+    ];
+    
+    const testMap = new Map([
+        [refAry[0], 0],
+        [refAry[1], 10],
+        [refAry[2], 20],
+        [refAry[3], 30],
+        [refAry[4], 40]
+      ]);
+
+      console.dir(testMap);
+      console.log("%c First insertion! ", "background-color: #A33");
+      const testPq = new PriorityQueue(testMap)
+
+      testPq.insert( refAry[3]);
+
+      console.log(testPq.orderedArr, testPq.distancesMap);
+
+      testPq.insert( refAry[2] );
+      testPq.insert( refAry[4] );
+      testPq.insert( refAry[1] );
+
+      console.log("%cRESULTING PQ:", "background-color: #999")
+      console.dir(testPq.orderedArr);
+
 
     
   }  // end create
