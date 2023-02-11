@@ -137,18 +137,20 @@ export default class PMpathfinding
 
     *drawPolyMap(polygonalMap)
     {
-      console.log("drawPolyMap:")
-      for(const [node, neighborContainer] of polygonalMap.graph)
+      const clone = testGraphHelper.cloneGraph(polygonalMap.graph);
+      console.log("drawPolyMap -CLONE-:")
+      for(const [node, neighborContainer] of clone)
       {
 
         this.debug.graphics.clear();
-        this.debug.graphics.fillCircle(node.x, node.y, 4); //showVector(node)
+        this.debug.graphics.fillCircle(node.x, node.y, 3); //showVector(node)
+        console.log(node, polygonalMap.graph.get(node).size)
         yield null
 
         for (const [neighbor, dist] of neighborContainer)
         {
-          // console.log(node, neighbor)
-          this.debug.lineFromVecs(node, neighbor, Phaser.Math.Between(0x6789ff, 0xffff9a))
+          console.log(neighborContainer === polygonalMap.graph.get(node), "clone size:", neighborContainer.size)
+          this.debug.lineFromVecs(node, neighbor, 0xffffca)// Phaser.Math.Between(0x9aff00, 0xffff9a))
           yield null
         }
       }

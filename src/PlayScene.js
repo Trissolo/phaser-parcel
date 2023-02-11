@@ -18,7 +18,7 @@ export default class PlayScene extends Phaser.Scene {
 
   create ()
   {
-    this.player = this.add.triangle(80, 32, 4, 16, 0, 0, 8, 0, 0x88bb88)//0xdb78ca)
+    this.player = this.add.triangle(224, 92, 4, 16, 0, 0, 8, 0, 0x88bb88)//0xdb78ca)
         .setOrigin(0.5, 1)
         .setDepth(2);
 
