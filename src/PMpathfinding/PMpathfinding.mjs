@@ -7,7 +7,7 @@ import testGraphHelper from "./testGraphHelper.mjs";
 //helpers
 import setLineFromVectors from "./setLineFromVectors.mjs";
 
-const {BetweenPoints} = Phaser.Math.Distance
+const {BetweenPoints: heuristic} = Phaser.Math.Distance
 // const {Polygon, Line} = Phaser.Geom
 const {GetMidPoint, GetNearestPoint} = Phaser.Geom.Line
 const {LineToLine} = Phaser.Geom.Intersects
@@ -40,17 +40,9 @@ function* EachVectorAndAdjacents(ary)
 // returns two vertices of each side of the rectangle
 function* EachPoligonSide({points})
 {
-    // const sidePointA = new Phaser.Math.Vector2();
-    // const sidePointB = new Phaser.Math.Vector2();
-
-    // const polygonSide = new Phaser.Geom.Line()
     for (let i = 0, {length} = points, j = length - 1; i < length; j = i++)
-    {   
-    
+    {      
       yield {sidePointA: points[i], sidePointB: points[j]};
-      //.setTo(points[i].x, points[i].y), sidePointB.setTo(points[j].x, points[j].y)};
-
-      // yield polygonSide.setTo(points[i].x, points[i].y, points[j].x, points[j].y);
     }
 }
 
@@ -58,7 +50,19 @@ function* EachPoligonSide({points})
 // returns (an array of) two points: the corrent one, and each of the remaining vertices
 function* anyAgainstAllOthers(ary)
 {
-  // console.log("anyAgainstAllOthers arr:", ary)
+  const jMax = ary.length;
+  const iMax = jMax - 1;
+  // const res = [];
+
+  for (let i = 0; i < iMax; i++)
+  {
+    for (let j = i + 1; j < jMax; j++)
+    {
+      yield [ ary[i], ary[j] ];
+    }
+  }
+
+    // console.log("anyAgainstAllOthers arr:", ary)
   // const {length} = ary;
   // const lenMinusOne = ary.length - 1;
   // let currentNodeIdx, anyOtherNodeIdx;
@@ -72,24 +76,10 @@ function* anyAgainstAllOthers(ary)
   //         yield {concaveA: ary[currentNodeIdx], concaveB: ary[anyOtherNodeIdx]};//, idxA: currentNodeIdx, idxB: anyOtherNodeIdx};
   //       }
   //     }
-  const jMax = ary.length;
-  const iMax = jMax - 1;
-  // const res = [];
 
-  for (let i = 0; i < iMax; i++)
-  {
-    for (let j = i + 1; j < jMax; j++)
-    {
-      yield [ ary[i], ary[j] ];
-    }
-  }
-}
+} // end anyAgainstAllOthers
 
-// setLineFromVectors(line, va, vb)
-// {
-//   return line.setTo(va.x, va.y, vb.x, vb.y)
-// }
-
+// class!
 export default class PMpathfinding
 {
     // debug = null;
@@ -121,20 +111,47 @@ export default class PMpathfinding
 
     addPolygonalMap(aryOfNumberArys, name = "default")
     {
-        const pm = new newVisMap(aryOfNumberArys);
+      const pm = new newVisMap(aryOfNumberArys);
 
-        this.grabAllConcave(pm);
+      this.grabAllConcave(pm);
 
-        this.polygonalMaps.set(name, pm)
+      this.checkAdjacent(pm);
 
-        console.dir("PM", pm)
 
-        return pm
+      this.quickConnConc(pm);
+
+
+      this.polygonalMaps.set(name, pm)
+
+      console.dir("PM", pm)
+
+      // this.drawPolyMap(pm)
+
+      return pm
     }
 
     getPolygonalMap(name = 'default')
     {
-        return this.polygonalMaps.get(name)
+      return this.polygonalMaps.get(name)
+    }
+
+    *drawPolyMap(polygonalMap)
+    {
+      console.log("drawPolyMap:")
+      for(const [node, neighborContainer] of polygonalMap.graph)
+      {
+
+        this.debug.graphics.clear();
+        this.debug.graphics.fillCircle(node.x, node.y, 4); //showVector(node)
+        yield null
+
+        for (const [neighbor, dist] of neighborContainer)
+        {
+          // console.log(node, neighbor)
+          this.debug.lineFromVecs(node, neighbor, Phaser.Math.Between(0x6789ff, 0xffff9a))
+          yield null
+        }
+      }
     }
 
     grabAllConcave(polygonalMap)
@@ -160,12 +177,93 @@ export default class PMpathfinding
           }
   
         }
-  
+
+        // from now isFirstPoly must be false!
         isFirstPoly = false;
   
       }
   
+    } // end grabAllConcave
+
+    checkAdjacent(polygonalMap) // (old)
+    {
+      // const {polygons} = polygonalMap
+      const {graph} = polygonalMap;
+
+      //console.log("%ccheck ADJ:[polygons]", DBG1, polygons, polygons.length)
+
+      // for (let polyIdx = polygons.length; polyIdx--;/**/)
+      for (const polygon of polygonalMap.polygons)
+      {
+        console.log("KADJ:", polygon)
+        // const {points} = polygons[polyIdx]
+        // EachPoligonSide
+        for (const {sidePointA, sidePointB} of EachPoligonSide(polygon))
+        // for (let i = -1, len = points.length, j = len - 1, {graph} = polygonalMap, vertexA, vertexB; ++i < len; j = i)
+        {
+          // vertexA = points[i]
+          // vertexB = points[j]
+          // if (nodeMap.has(vertexA) && nodeMap.has(vertexB))
+          if (graph.has(sidePointA) && graph.has(sidePointB))
+          {
+            testGraphHelper.addEdge(sidePointA, sidePointB, heuristic(sidePointA, sidePointB), graph)
+            // graph.insertEdge(sidePointA, sidePointB, heuristic(sidePointA, sidePointB))
+          }
+        }
+      }
+    } // end (old) checkAdjacent
+
+    quickConnConc(polygonalMap)
+    {
+      for (const [concaveA, concaveB] of anyAgainstAllOthers([...polygonalMap.graph.keys()]))
+      {
+        if (this.quickInLineOfSight(concaveA, concaveB, polygonalMap))
+        {
+          testGraphHelper.addEdge(concaveA, concaveB, heuristic(concaveA, concaveB), polygonalMap.graph)
+        }
+      }
     }
+
+    quickInLineOfSight(start, end, polygonalMap)
+    {
+      //the segment to check against any polygon side
+      const ray = new Phaser.Geom.Line();
+      setLineFromVectors(ray, start, end);
+
+      //One side of current polygon
+      const polygonSide = new Phaser.Geom.Line();
+
+      for (const polygon of polygonalMap.polygons)
+      {
+        // console.log("Other poly", polygon)
+        for (const {sidePointA, sidePointB} of EachPoligonSide(polygon))
+        {
+          setLineFromVectors(polygonSide, sidePointA, sidePointB);
+
+          if (LineToLine(ray, polygonSide, this.out) && !this.itsNear(start, end, sidePointA, sidePointB))
+          {
+            return false
+          }
+        }
+      }
+
+      //another loop?
+      const rayPoints = ray.getPoints(this.splitAmount)
+      rayPoints[0] = GetMidPoint(ray)
+      
+      let fagain = false;
+      for (const poly of polygonalMap.polygons)//.entries())
+      {
+        if (rayPoints.some((point, idx, ary) => poly.contains(point.x, point.y) === fagain))
+        {
+          return false
+        }
+        fagain = true
+      }
+
+      return true
+
+    } // end quickInLineOfSight
 
     *oldInLineOfSight(start, end, polygonalMap)
     {
@@ -206,7 +304,25 @@ export default class PMpathfinding
             //return false
           }
 
-          const rayPoints = ray.getPoints(this.splitAmount)
+          
+          // explicit check
+          // let first = true;
+          // for (const polygon of polygonalMap.polygons)
+          // {
+          //   console.log(first, polygon)
+          //   if (rayPoints.some(ele => polygon.contains(ele.x, ele.y) === first))
+          //   {
+          //     console.log(polygon.contains(e.x, e.y) === first)
+          //     // return false
+          //   }
+          //   first = false
+          // }
+
+
+        }
+      } //end EachPoligonSide
+
+      const rayPoints = ray.getPoints(this.splitAmount)
           rayPoints[0] = GetMidPoint(ray)
           
           let fagain = true;
@@ -238,22 +354,6 @@ export default class PMpathfinding
             fagain = false;
               
           }
-          // explicit check
-          // let first = true;
-          // for (const polygon of polygonalMap.polygons)
-          // {
-          //   console.log(first, polygon)
-          //   if (rayPoints.some(ele => polygon.contains(ele.x, ele.y) === first))
-          //   {
-          //     console.log(polygon.contains(e.x, e.y) === first)
-          //     // return false
-          //   }
-          //   first = false
-          // }
-
-
-        }
-      } //end EachPoligonSide
 
     } // end oldInLineOfSight
 

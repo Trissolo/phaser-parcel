@@ -45,11 +45,11 @@ export default class PlayScene extends Phaser.Scene {
     // }
     // this.pmStroll.debug.lineFromVecs(this.polyMap.polygons[0].points[0], this.polyMap.polygons[1].points[1])
 
-    this.gag = this.pmStroll.oldInLineOfSight(this.player, this.dest, this.polyMap);
+    // this.gag = this.pmStroll.oldInLineOfSight(this.player, this.dest, this.polyMap);
 
     // this.gag = this.pmStroll.testGenConnectNodes(this.polyMap);
      
-    //
+    this.gag = this.pmStroll.drawPolyMap(this.polyMap)
     this.input.keyboard.on("keydown-Z", () => {this.gag.next()});
 
     

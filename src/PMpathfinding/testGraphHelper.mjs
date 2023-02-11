@@ -18,12 +18,14 @@ export default class testGraphHelper
         return graph.has(node) && this.edgesContainerOf(node, graph).has(neighbor);
     }
 
-    static connect(node, neighbor, graph)
+    static addEdge(node, neighbor, dist, graph)
     {
         if (!this.edgeAlreadyExists(node, neighbor, graph))
         {
-            const dist = Phaser.Math.Distance.BetweenPoints(node, neighbor);
+            // const dist = Phaser.Math.Distance.BetweenPoints(node, neighbor);
+
             this.edgesContainerOf(node, graph).set(neighbor, dist);
+
             this.edgesContainerOf(neighbor, graph).set(node, dist);
         }
     }
