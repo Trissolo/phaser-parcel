@@ -89,6 +89,12 @@ export default class PlayScene extends Phaser.Scene {
       console.log("%cRESULTING PQ:", "background-color: #999")
       console.dir(testPq.orderedArr);
 
+      const first = testPq.pop()
+      console.log("POPPED", first);
+
+      console.log("After Pop PQ:")
+      console.dir(testPq.orderedArr);
+
 
     
   }  // end create
