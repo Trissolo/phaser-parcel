@@ -67,7 +67,7 @@ export default class PlayScene extends Phaser.Scene {
     ];
     
     const testMap = new Map([
-        [refAry[0], 0],
+        [refAry[0], 9],
         [refAry[1], 10],
         [refAry[2], 20],
         [refAry[3], 30],
@@ -85,6 +85,7 @@ export default class PlayScene extends Phaser.Scene {
       testPq.insert( refAry[2] );
       testPq.insert( refAry[4] );
       testPq.insert( refAry[1] );
+      testPq.insert( refAry[0] );
 
       console.log("%cRESULTING PQ:", "background-color: #999")
       console.dir(testPq.orderedArr);
@@ -92,8 +93,17 @@ export default class PlayScene extends Phaser.Scene {
       const first = testPq.pop()
       console.log("POPPED", first);
 
-      console.log("After Pop PQ:")
+      //change testMap value:
+      const testNode = refAry[3];
+      testMap.set(testNode, 12)
+      testPq.reorderUpFrom(testNode)
+      // console.log("After Pop PQ:")
+      // console.dir(testPq.orderedArr);
+      console.log("After ReorderUpFrom PQ:");
       console.dir(testPq.orderedArr);
+
+      testPq.orderedArr.forEach(el => console.log("ORC", el, testPq.distancesMap.get(el)));
+
 
 
     
