@@ -259,6 +259,57 @@ export default class PMpathfinding
 
     } // end quickInLineOfSight
 
+    addExtraNodeToClonedGraph(extraNode, clonedGraph, graphKeys, limit, originalPolygonalMap)
+    {
+      testGraphHelper.addNode(extraNode, clonedGraph);
+
+      for (let i = 0; i < limit; i++)
+      {
+        const node = graphKeys[i];
+
+        if (this.quickInLineOfSight(extraNode, node, originalPolygonalMap))
+        {
+          testGraphHelper.addEdge(extraNode, node, heuristic(extraNode, node), clonedGraph);
+        }
+      }
+
+      //just in case...
+      return clonedGraph
+    }
+
+    newPrepareGraph(start, end, polygonalMap)
+    {
+      // 1) Clone the Graph:
+      const clonedGraph = testGraphHelper.cloneGraph(polygonalMap.graph);
+
+      // console.log("Current clonedGraph size", clonedGraph.size)
+
+      // 2) Extract the Keys (extract the keys, which are used to create the edges of the new node):
+      const graphKeys = [...clonedGraph.keys()];
+
+      // 3) the highest node index - when creating edges you don't need to go further
+      let {length} = graphKeys;
+
+      // 4) Add and connect the new Node
+      this.addExtraNodeToClonedGraph(start, clonedGraph, graphKeys, length, polygonalMap);
+
+      // console.log("Current clonedGraph size after:", clonedGraph.size);
+
+      // 5) Before add the second new node update the Keys and 'length'
+      graphKeys.push(start);
+
+      //6) 'length'
+      length += 1;
+
+      // 7) Add the 'end' node
+      this.addExtraNodeToClonedGraph(end, clonedGraph, graphKeys, length, polygonalMap);
+
+      // console.log("Current clonedGraph size after adding the second node:", clonedGraph.size);
+
+      //done!
+      return clonedGraph
+    }
+
 
     prepareGraph(start, end, polygonalMap)
     {

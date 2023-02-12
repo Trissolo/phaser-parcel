@@ -62,22 +62,22 @@ export default class PlayScene extends Phaser.Scene {
     //test clonedMap
     // const clonedGraph = this.pmStroll.prepareGraph(this.player, this.dest, this.polyMap);
 
+    console.log("Here...")
     // test astar
-    const finderAstar = this.pmStroll.prepareGraph(this.player, this.dest, this.polyMap);
-    console.log("ClonedGraph aka Finder", finderAstar);
+    // const finderAstar = this.pmStroll.prepareGraph(this.player, this.dest, this.polyMap);
+    // console.log("ClonedGraph aka Finder", finderAstar);
 
 
-    this.gag = finderAstar.search();
-    this.input.keyboard.on("keydown-Z", () => {this.gag.next()});
+    // this.gag = finderAstar.search();
+    // this.input.keyboard.on("keydown-Z", () => {this.gag.next()});
 
-    const path = finderAstar.getPath();
+    // const path = finderAstar.getPath();
 
-    console.log("PATH!:", path)
+    // console.log("PATH!:", path)
 
-    
-    this.pmStroll.debug.setLineColor(0xffff99)
-    this.pmStroll.debug.graphics.strokePoints(path, false, false)
-    // const finder = new AStar(this.player, this.dest, testGraphHelper.cloneGraph(this.polyMap.graph), this.pmStroll.debug)
+    //show path
+    // this.pmStroll.debug.setLineColor(0xffff99)
+    // this.pmStroll.debug.graphics.strokePoints(path, false, false)
 
 
 
@@ -149,23 +149,30 @@ export default class PlayScene extends Phaser.Scene {
 
     else
     {
-      // this.gag = this.pmStroll.drawPolyMap(   this.pmStroll.prepareGraph(this.player, this.dest, this.polyMap));
-      const finderAstar = this.pmStroll.prepareGraph(this.player, this.dest, this.polyMap);
+      console.dir("Left click: test newPrepareGraph");
+      const testClonedGraph = this.pmStroll.newPrepareGraph(this.player, this.dest, this.polyMap);
+
+      this.pmStroll.debug.showGraph(testClonedGraph);
+
+
+      // // this.gag = this.pmStroll.drawPolyMap(   this.pmStroll.prepareGraph(this.player, this.dest, this.polyMap));
+      // const finderAstar = this.pmStroll.prepareGraph(this.player, this.dest, this.polyMap);
       
-      finderAstar.search();
+      // finderAstar.search();
 
-      // this.gag = finderAstar.search();
+      // // this.gag = finderAstar.search();
 
-      const path = finderAstar.getPath();
+      // const path = finderAstar.getPath();
 
-      console.log("CLICK PATH!:", path)
+      // console.log("CLICK PATH!:", path)
 
-      // this.pmStroll.debug.graphics.clear()
-      if(path.length)
-      {
-        this.pmStroll.debug.setLineColor(0xffff99)
-        this.pmStroll.debug.graphics.strokePoints(path, false, false)
-      }
+      // // this.pmStroll.debug.graphics.clear()
+      // if(path.length)
+      // {
+      //   this.pmStroll.debug.setLineColor(0xffff99)
+      //   this.pmStroll.debug.graphics.strokePoints(path, false, false)
+      // }
+
     }
   }
 
