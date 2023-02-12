@@ -7,7 +7,9 @@ import PMpathfinding from './PMpathfinding/PMpathfinding.mjs';
 
 
 //testing PQ
-import PriorityQueue from './PMpathfinding/pfalgorithms/PriorityQueue.mjs';
+// import PriorityQueue from './PMpathfinding/pfalgorithms/PriorityQueue.mjs';
+// import AStar from './PMpathfinding/pfalgorithms/astar.mjs';
+// import testGraphHelper from './PMpathfinding/testGraphHelper.mjs';
 
 export default class PlayScene extends Phaser.Scene {
   constructor ()
@@ -57,52 +59,65 @@ export default class PlayScene extends Phaser.Scene {
     // this.gag = this.pmStroll.drawPolyMap(this.polyMap)
     // this.input.keyboard.on("keydown-Z", () => {this.gag.next()});
 
+    //test clonedMap
+    // const clonedGraph = this.pmStroll.prepareGraph(this.player, this.dest, this.polyMap);
+
+    // console.log("ClonedGraph", clonedGraph);
+
+    // this.gag = this.pmStroll.drawPolyMap(clonedGraph);
+    this.input.keyboard.on("keydown-Z", () => {this.gag.next()});
+
+    // const finder = new AStar(this.player, this.dest, testGraphHelper.cloneGraph(this.polyMap.graph), this.pmStroll.debug)
+
+
+
+
     //test pq
-    const refAry = [
-      {x: 0, y: 0},
-      {x: 1, y: 1},
-      {x: 2, y: 2},
-      {x: 3, y: 3},
-      {x: 4, y: 4}
-    ];
+    // const refAry = [
+    //   {x: 0, y: 0},
+    //   {x: 1, y: 1},
+    //   {x: 2, y: 2},
+    //   {x: 3, y: 3},
+    //   {x: 4, y: 4}
+    // ];
     
-    const testMap = new Map([
-        [refAry[0], 9],
-        [refAry[1], 10],
-        [refAry[2], 20],
-        [refAry[3], 30],
-        [refAry[4], 40]
-      ]);
+    // const testMap = new Map([
+    //     [refAry[0], 9],
+    //     [refAry[1], 10],
+    //     [refAry[2], 20],
+    //     [refAry[3], 30],
+    //     [refAry[4], 40]
+    //   ]);
 
-      console.dir(testMap);
-      console.log("%c First insertion! ", "background-color: #A33");
-      const testPq = new PriorityQueue(testMap)
+    //   console.dir(testMap);
+    //   console.log("%c First insertion! ", "background-color: #A33");
+    //   const testPq = new PriorityQueue(testMap)
 
-      testPq.insert( refAry[3]);
+    //   testPq.insert( refAry[3]);
 
-      console.log(testPq.orderedArr, testPq.distancesMap);
+    //   console.log(testPq.orderedArr, testPq.distancesMap);
 
-      testPq.insert( refAry[2] );
-      testPq.insert( refAry[4] );
-      testPq.insert( refAry[1] );
-      testPq.insert( refAry[0] );
+    //   testPq.insert( refAry[2] );
+    //   testPq.insert( refAry[4] );
+    //   testPq.insert( refAry[1] );
+    //   testPq.insert( refAry[0] );
 
-      console.log("%cRESULTING PQ:", "background-color: #999")
-      console.dir(testPq.orderedArr);
+    //   console.log("%cRESULTING PQ:", "background-color: #999")
+    //   console.dir(testPq.orderedArr);
 
-      const first = testPq.pop()
-      console.log("POPPED", first);
+    //   const first = testPq.pop()
+    //   console.log("POPPED", first);
 
-      //change testMap value:
-      const testNode = refAry[3];
-      testMap.set(testNode, 12)
-      testPq.reorderUpFrom(testNode)
-      // console.log("After Pop PQ:")
-      // console.dir(testPq.orderedArr);
-      console.log("After ReorderUpFrom PQ:");
-      console.dir(testPq.orderedArr);
+    //   //change testMap value:
+    //   const testNode = refAry[3];
+    //   testMap.set(testNode, 12)
+    //   testPq.reorderUpFrom(testNode)
+    //   // console.log("After Pop PQ:")
+    //   // console.dir(testPq.orderedArr);
+    //   console.log("After ReorderUpFrom PQ:");
+    //   console.dir(testPq.orderedArr);
 
-      testPq.orderedArr.forEach(el => console.log("ORC", el, testPq.distancesMap.get(el)));
+    //   testPq.orderedArr.forEach(el => console.log("ORC", el, testPq.distancesMap.get(el)));
 
 
 
@@ -116,13 +131,15 @@ export default class PlayScene extends Phaser.Scene {
       this.player.setPosition(pointer.worldX, pointer.worldY);
     }
 
-    else 
-    {
-      if (pointer.rightButtonDown())
+    else if (pointer.rightButtonDown())
       {
 
         this.dest.setPosition(pointer.worldX, pointer.worldY);
       }
+    // }
+    else
+    {
+      this.gag = this.pmStroll.drawPolyMap(   this.pmStroll.prepareGraph(this.player, this.dest, this.polyMap));
     }
   }
 

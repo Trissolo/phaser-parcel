@@ -23,7 +23,7 @@ export default class PriorityQueue
     
     insert(node)
     {
-        console.log("Inserting:", node)
+        // console.log("Inserting:", node)
         this.orderedArr.push(node);
         
         this.reorderUp();
@@ -44,10 +44,10 @@ export default class PriorityQueue
     
     reorderUp(orderedArr = this.orderedArr, distancesMap = this.distancesMap)
     {
-        console.log("reorderUp|Length:", orderedArr.length, distancesMap.get(orderedArr[orderedArr.length - 1]), distancesMap.get(orderedArr[orderedArr.length - 2]), "stoca");   
+        // console.log("reorderUp|Length:", orderedArr.length, distancesMap.get(orderedArr[orderedArr.length - 1]), distancesMap.get(orderedArr[orderedArr.length - 2]), "stoca");   
         for (let idx = orderedArr.length - 1; /*idx > 0 && */distancesMap.get(orderedArr[idx]) < distancesMap.get(orderedArr[idx - 1]); idx--)
         {
-            console.log("%creorderUp Swapping:", "background-color: #0A2", orderedArr[idx], orderedArr[idx - 1]);//distancesMap.get(orderedArr[idx]), distancesMap.get(orderedArr[idx - 1]))
+            // console.log("%creorderUp Swapping:", "background-color: #0A2", orderedArr[idx], orderedArr[idx - 1]);//distancesMap.get(orderedArr[idx]), distancesMap.get(orderedArr[idx - 1]))
             // const tmp = orderedArr[idx];
             // orderedArr[idx] = orderedArr[idx - 1];
             // orderedArr[idx - 1] = tmp;
@@ -61,7 +61,7 @@ export default class PriorityQueue
         // for (let idx = 0, len = orderedArr.length - 1; idx < len; idx++)
         for (let idx = 0; distancesMap.get(orderedArr[idx]) > distancesMap.get(orderedArr[idx + 1]); idx++)
         {
-            console.log("%cDown. Swapping:", "background-color: #20A", orderedArr[idx], orderedArr[idx + 1]);
+            // console.log("%cDown. Swapping:", "background-color: #20A", orderedArr[idx], orderedArr[idx + 1]);
                 // const tmp = orderedArr[idx];
                 // orderedArr[idx] = orderedArr[idx + 1];
                 // orderedArr[idx + 1] = tmp;
@@ -74,7 +74,7 @@ export default class PriorityQueue
         console.log("reorderUpFrom"); //|Length:", orderedArr.length, distancesMap.get(orderedArr[orderedArr.length - 1]), distancesMap.get(orderedArr[orderedArr.length - 2]), "stoca");   
         for (let idx = orderedArr.indexOf(node); /*idx > 0 && */distancesMap.get(orderedArr[idx]) < distancesMap.get(orderedArr[idx - 1]); idx--)
         {
-            console.log("%creorderUp Swapping:", "background-color: #0A2", orderedArr[idx], orderedArr[idx - 1]);//distancesMap.get(orderedArr[idx]), distancesMap.get(orderedArr[idx - 1]))
+            // console.log("%creorderUp Swapping:", "background-color: #0A2", orderedArr[idx], orderedArr[idx - 1]);//distancesMap.get(orderedArr[idx]), distancesMap.get(orderedArr[idx - 1]))
             // const tmp = orderedArr[idx];
             // orderedArr[idx] = orderedArr[idx - 1];
             // orderedArr[idx - 1] = tmp;

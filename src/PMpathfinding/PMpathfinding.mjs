@@ -1,6 +1,8 @@
 import PMpathfindingDebug from "./PMpathfindingDebug.mjs";
 import newVisMap from "./newVisMap.mjs";
 
+import AStar from "./pfalgorithms/astar.mjs";
+
 // import testGraphHelper from "./testGraph.mjs";
 import testGraphHelper from "./testGraphHelper.mjs";
 
@@ -137,19 +139,19 @@ export default class PMpathfinding
 
     *drawPolyMap(polygonalMap)
     {
-      const clone = testGraphHelper.cloneGraph(polygonalMap.graph);
-      console.log("drawPolyMap -CLONE-:")
-      for(const [node, neighborContainer] of clone)
+      // const clone = testGraphHelper.cloneGraph(polygonalMap.graph);
+      // console.log("drawPolyMap -CLONE-:")
+      for(const [node, neighborContainer] of polygonalMap)
       {
 
         this.debug.graphics.clear();
         this.debug.graphics.fillCircle(node.x, node.y, 3); //showVector(node)
-        console.log(node, polygonalMap.graph.get(node).size)
+        // console.log(node, polygonalMap.graph.get(node).size)
         yield null
 
         for (const [neighbor, dist] of neighborContainer)
         {
-          console.log(neighborContainer === polygonalMap.graph.get(node), "clone size:", neighborContainer.size)
+          // console.log(neighborContainer === polygonalMap.graph.get(node), "clone size:", neighborContainer.size)
           this.debug.lineFromVecs(node, neighbor, 0xffffca)// Phaser.Math.Between(0x9aff00, 0xffff9a))
           yield null
         }
@@ -205,13 +207,13 @@ export default class PMpathfinding
       }
     } // end (old) checkAdjacent
 
-    quickConnConc(polygonalMap)
+    quickConnConc(polygonalMap, graph = polygonalMap.graph)
     {
-      for (const [concaveA, concaveB] of anyAgainstAllOthers([...polygonalMap.graph.keys()]))
+      for (const [concaveA, concaveB] of anyAgainstAllOthers([...graph.keys()]))
       {
         if (this.quickInLineOfSight(concaveA, concaveB, polygonalMap))
         {
-          testGraphHelper.addEdge(concaveA, concaveB, heuristic(concaveA, concaveB), polygonalMap.graph)
+          testGraphHelper.addEdge(concaveA, concaveB, heuristic(concaveA, concaveB), graph)
         }
       }
     }
@@ -256,6 +258,56 @@ export default class PMpathfinding
       return true
 
     } // end quickInLineOfSight
+
+
+    prepareGraph(start, end, polygonalMap)
+    {
+      // const finder = new AStar(this.player, this.dest, testGraphHelper.cloneGraph(this.polyMap.graph), this.pmStroll.debug)
+      const clone = testGraphHelper.cloneGraph(polygonalMap.graph);
+
+      testGraphHelper.addNode(start, clone);
+      const tempKeysFirstTime = [...clone.keys()]
+
+      // for (const node of clone.keys())
+      for (let i = 0; i < tempKeysFirstTime.length - 1; i++)
+      {
+        const node = tempKeysFirstTime[i];
+        // console.log("Iterating clone keys!", node);
+        if (this.quickInLineOfSight(start, node, polygonalMap))
+        {
+          testGraphHelper.addEdge(start, node, heuristic(start, node), clone)
+        }
+      }
+
+      testGraphHelper.addNode(end, clone);
+      tempKeysFirstTime.push(end);
+
+      for (let i = 0; i < tempKeysFirstTime.length - 1; i++)
+      {
+        const node = tempKeysFirstTime[i];
+        // console.log("Iterating clone keys!", node);
+        if (this.quickInLineOfSight(end, node, polygonalMap))
+        {
+          testGraphHelper.addEdge(end, node, heuristic(end, node), clone)
+        }
+      }
+
+
+
+      // testGraphHelper.addNode(end, clone);
+      // for (const node of clone.keys())
+      // {
+      //   // console.log("Iterating clone keys!", node);
+      //   if (this.quickInLineOfSight(end, node, polygonalMap))
+      //   {
+      //     testGraphHelper.addEdge(end, node, heuristic(end, node), clone)
+      //   }
+      // }
+
+      console.log("Sizes", clone.size, polygonalMap.graph.size, "imp:", tempKeysFirstTime.length, tempKeysFirstTime);
+
+      return clone
+    }
 
     *oldInLineOfSight(start, end, polygonalMap)
     {
