@@ -194,7 +194,7 @@ export default class AStar
 			// console.log("%cAdvanc:", "background-color: #589", advanc++, this.graph.get(currentNode).size);
 			// this.costSoFar.set(currentNode, 0)
 
-			if (currentNode === this.target) {console.log("GOAL REACHED!", this.cameFrom); return};
+			if (currentNode === this.target) {console.log("GOAL REACHED!", this.cameFrom); return this};
 
 
 			for (const [neighbor, distance] of this.graph.get(currentNode))
@@ -238,21 +238,10 @@ export default class AStar
 						frontier.insert(neighbor)
 					}
 				}
-
-				// betterCost? frontier.reorderUpFrom(neighbor) : frontier.insert(neighbor)
-				// if (betterCost)
-				// {
-				// 	console.log("fr reoupFrom", frontier);
-				// 	frontier.reorderUpFrom(neighbor);
-				// }
-				// else
-				// {
-				// 	console.log("fr adding");
-				// 	frontier.insert(neighbor)
-				// }
 				
 			}
         }
+		return this
     }
 
 	getPath()

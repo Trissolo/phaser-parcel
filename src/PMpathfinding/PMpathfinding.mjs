@@ -277,7 +277,7 @@ export default class PMpathfinding
       return clonedGraph
     }
 
-    newPrepareGraph(start, end, polygonalMap)
+    prepareGraph(start, end, polygonalMap)
     {
       // 1) Clone the Graph:
       const clonedGraph = testGraphHelper.cloneGraph(polygonalMap.graph);
@@ -305,13 +305,29 @@ export default class PMpathfinding
       this.addExtraNodeToClonedGraph(end, clonedGraph, graphKeys, length, polygonalMap);
 
       // console.log("Current clonedGraph size after adding the second node:", clonedGraph.size);
+      this.debug.showGraph(clonedGraph);
 
       //done!
       return clonedGraph
     }
 
+    pathAStar(start, end, polygonalMap)
+    {
+      const clonedGraph = this.prepareGraph(start, end, polygonalMap);
 
-    prepareGraph(start, end, polygonalMap)
+      const finder = new AStar(start, end, clonedGraph, this.debug);
+
+      finder.search();
+
+      const path = finder.getPath();
+
+      console.log(path)
+
+      return path
+    }
+
+
+    oldPrepareGraph(start, end, polygonalMap)
     {
       const clone = testGraphHelper.cloneGraph(polygonalMap.graph);
 

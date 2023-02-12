@@ -142,37 +142,27 @@ export default class PlayScene extends Phaser.Scene {
     }
 
     else if (pointer.rightButtonDown())
-      {
+    {
 
-        this.dest.setPosition(pointer.worldX, pointer.worldY);
-      }
+      this.dest.setPosition(pointer.worldX, pointer.worldY);
+    }
 
     else
     {
+      //basic AStar test (without destroying clonedGrap, though)
+
       console.dir("Left click: test newPrepareGraph");
-      const testClonedGraph = this.pmStroll.newPrepareGraph(this.player, this.dest, this.polyMap);
+      const testPathfinding = this.pmStroll.pathAStar(this.player, this.dest, this.polyMap);
+      console.dir(testPathfinding)
 
-      this.pmStroll.debug.showGraph(testClonedGraph);
+      //show
+      this.pmStroll.debug.graphics.clear();
 
-
-      // // this.gag = this.pmStroll.drawPolyMap(   this.pmStroll.prepareGraph(this.player, this.dest, this.polyMap));
-      // const finderAstar = this.pmStroll.prepareGraph(this.player, this.dest, this.polyMap);
-      
-      // finderAstar.search();
-
-      // // this.gag = finderAstar.search();
-
-      // const path = finderAstar.getPath();
-
-      // console.log("CLICK PATH!:", path)
-
-      // // this.pmStroll.debug.graphics.clear()
-      // if(path.length)
-      // {
-      //   this.pmStroll.debug.setLineColor(0xffff99)
-      //   this.pmStroll.debug.graphics.strokePoints(path, false, false)
-      // }
-
+      if(testPathfinding.length)
+      {
+        this.pmStroll.debug.setLineColor(0xffff99);
+        this.pmStroll.debug.graphics.strokePoints(testPathfinding, false, false);
+      }
     }
   }
 
