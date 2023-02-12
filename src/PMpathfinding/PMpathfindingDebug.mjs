@@ -76,6 +76,12 @@ export default class PMpathfindingDebug
         this.graphics.fillPoints(pointsAry, true, false)
     }
 
+	showPath(vecAry, color = 0xffff99)
+	{
+		this.setLineColor(color);
+        this.graphics.strokePoints(vecAry, false, false);
+	}
+
 	setFillColor(hexCol = 0xffffff)
 	{
 		this.graphics.fillStyle(hexCol, 1)

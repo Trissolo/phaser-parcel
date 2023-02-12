@@ -315,15 +315,16 @@ export default class PMpathfinding
     {
       const clonedGraph = this.prepareGraph(start, end, polygonalMap);
 
-      const finder = new AStar(start, end, clonedGraph, this.debug);
+      const finder = new AStar(start, end, clonedGraph, this.debug)//.search();
+      console.log("PMpathfinding finder", finder)
 
-      finder.search();
+      // finder.search();
 
-      const path = finder.getPath();
+      // const path = finder.getPath();
 
-      console.log(path)
+      // console.log("finder", finder)
 
-      return path
+      return finder.getPath()
     }
 
 

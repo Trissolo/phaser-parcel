@@ -153,15 +153,15 @@ export default class PlayScene extends Phaser.Scene {
 
       console.dir("Left click: test newPrepareGraph");
       const testPathfinding = this.pmStroll.pathAStar(this.player, this.dest, this.polyMap);
-      console.dir(testPathfinding)
+      console.dir("SceneA AStar:", testPathfinding)
 
       //show
-      this.pmStroll.debug.graphics.clear();
-
+      
       if(testPathfinding.length)
       {
-        this.pmStroll.debug.setLineColor(0xffff99);
-        this.pmStroll.debug.graphics.strokePoints(testPathfinding, false, false);
+        console.log("...drawing")
+        this.pmStroll.debug.graphics.clear();
+        this.pmStroll.debug.showPath(testPathfinding, 0xb845a9)
       }
     }
   }
