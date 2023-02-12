@@ -292,7 +292,8 @@ export default class PMpathfinding
       }
 
       //temp! the clone must be returned!
-this.debug.showGraph(clone);
+      this.debug.showGraph(clone);
+
 
       const finder = new AStar(start, end, clone, this.debug);
       console.log("Finder:", finder)

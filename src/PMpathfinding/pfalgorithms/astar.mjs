@@ -15,7 +15,7 @@ export default class AStar
 		this.heuristic = heuristic;
 
 		//Shortest Path Tree: this array contains the lowest cost edge to get to a specific node
-		this.SPTstocazz = [];
+		// this.SPTstocazz = [];
 		
 		//Search Frontier
 		// this.searchFrontier = new Set();
@@ -35,7 +35,7 @@ export default class AStar
 		//populate gScore and fScore
         for (const node of graph.keys())
         {
-            this.fScore.set(node, Number.MAX_SAFE_INTEGER);
+            this.fScore.set(node, 0);//Number.MAX_SAFE_INTEGER);
 
             // this.costSoFar.set(node, 0);
         };
@@ -258,20 +258,23 @@ export default class AStar
 	getPath()
 	{
 		let {target} = this;
-
+		
 		const path = [];
+
+		if (!this.cameFrom.has(target) || !this.cameFrom.size) {return console.log("I N V A L I D!"), path}
+		
 
 		path.push(target)
 
 		console.log("this.camefrom", this.cameFrom.size)
 
-		if (!this.cameFrom.has(target)) {return console.log("I N V A L I D!")}
 
 		while (target !== this.start && (this.cameFrom.has(target) || this.cameFrom.get(target) === undefined))
 		{
 			target = this.cameFrom.get(target);
 			path.push(target)
 		}
+
 		return path
 
 

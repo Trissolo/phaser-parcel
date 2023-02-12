@@ -161,8 +161,11 @@ export default class PlayScene extends Phaser.Scene {
       console.log("CLICK PATH!:", path)
 
       // this.pmStroll.debug.graphics.clear()
-      this.pmStroll.debug.setLineColor(0xffff99)
-      this.pmStroll.debug.graphics.strokePoints(path, false, false)
+      if(path.length)
+      {
+        this.pmStroll.debug.setLineColor(0xffff99)
+        this.pmStroll.debug.graphics.strokePoints(path, false, false)
+      }
     }
   }
 
