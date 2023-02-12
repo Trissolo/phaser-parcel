@@ -38,6 +38,18 @@ export default class PMpathfindingDebug
         }
     }
 
+	showGraph(graph)
+	{
+		this.graphics.clear()
+		for(const [node, edges] of graph)
+		{
+			for(const [neigh, qwe] of edges)
+			{
+				this.lineFromVecs(node, neigh);
+			}
+		}
+	}
+
 	lineFromVecs(vecA, vecB, color = CONSTANTS.edgeCol)
 	{
 		this.setLineColor(color);

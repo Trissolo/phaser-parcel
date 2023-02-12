@@ -18,7 +18,7 @@ export default class AStar
 		this.SPTstocazz = [];
 		
 		//Search Frontier
-		this.searchFrontier = [];
+		this.searchFrontier = new Set();
 
 		this.cameFrom = new Map();
 
@@ -37,7 +37,7 @@ export default class AStar
         {
             this.fScore.set(node, 0);
 
-            //this.costSoFar.set(node, 0);
+            this.costSoFar.set(node, 0);
         };
 
         // console.log(this.gScore);
@@ -47,39 +47,39 @@ export default class AStar
 	}
 
 	
-	constructorOld(edges, startIndex, targetIndex, targetVector, pmsDebu)
-	{
-		this.startIndex = startIndex
-		this.targetIndex = targetIndex
+	// constructorOld(edges, startIndex, targetIndex, targetVector, pmsDebu)
+	// {
+	// 	this.startIndex = startIndex
+	// 	this.targetIndex = targetIndex
 		
-		//shortcuts?
-		//console.log("ELEn");
-		//debugEdge(edges[1])
-		//console.log("ELEFIN");
-		this.heuristic = heuristic
-		this.edges = edges
-		this.targetVector = targetVector
+	// 	//shortcuts?
+	// 	//console.log("ELEn");
+	// 	//debugEdge(edges[1])
+	// 	//console.log("ELEFIN");
+	// 	this.heuristic = heuristic
+	// 	this.edges = edges
+	// 	this.targetVector = targetVector
 
-		//Shortest Path Tree: this array contains the lowest cost edge to get to a specific node
-		this.SPTstocazz = []
+	// 	//Shortest Path Tree: this array contains the lowest cost edge to get to a specific node
+	// 	this.SPTstocazz = []
 		
-		//For node n, gScore[n] is the cost of the cheapest path from start to n currently known.
-		this.gScore = []
+	// 	//For node n, gScore[n] is the cost of the cheapest path from start to n currently known.
+	// 	this.gScore = []
 		
-		// For node n, fScore[n] := gScore[n] + h(n). fScore[n] represents our current best guess as to
-    	// how short a path from start to finish can be if it goes through n.
-		this.fScore = []
+	// 	// For node n, fScore[n] := gScore[n] + h(n). fScore[n] represents our current best guess as to
+    // 	// how short a path from start to finish can be if it goes through n.
+	// 	this.fScore = []
 
-		//Search Frontier
-		this.SF = []
+	// 	//Search Frontier
+	// 	this.SF = []
 		
-		for (let i = 0, len = this.edges.length; i < len; i++) {
-			this.gScore[i] = 0
-			this.fScore[i] = 0
-		}
+	// 	for (let i = 0, len = this.edges.length; i < len; i++) {
+	// 		this.gScore[i] = 0
+	// 		this.fScore[i] = 0
+	// 	}
 
-		this.search()
-	}
+	// 	this.search()
+	// }
 	
 	searchOld()
 	{
@@ -180,6 +180,7 @@ export default class AStar
 		const frontier = new PriorityQueue(this.fScore);
 		
 		frontier.insert(this.start);
+		this.searchFrontier.add(this.start)
 
         while(!frontier.isEmpty())
 		{
@@ -187,7 +188,7 @@ export default class AStar
 
 			
 			// console.log("%cAdvanc:", "background-color: #589", advanc++, this.graph.get(currentNode).size);
-			this.costSoFar.set(currentNode, 0)
+			// this.costSoFar.set(currentNode, 0)
 
 			if (currentNode === this.target) {console.log("GOAL REACHED!", this.cameFrom); return};
 
@@ -212,7 +213,7 @@ export default class AStar
 
 				// yield null;
 
-				if(!this.costSoFar.has(neighbor) || betterCost)
+				if(!this.searchFrontier.has(neighbor) || betterCost)
 				{
 					this.costSoFar.set(neighbor, newCost);
 
@@ -220,11 +221,13 @@ export default class AStar
 					
 					this.cameFrom.set(neighbor, currentNode);
 
-					betterCost? frontier.reorderUpFrom(neighbor) : frontier.insert(neighbor)
+					this.searchFrontier.add(neighbor)
+
+					// betterCost? frontier.reorderUpFrom(neighbor) : frontier.insert(neighbor)
 					if (betterCost)
 					{
 						console.log("fr reoupFrom DENT", frontier);
-						frontier.reorderUp();//From(neighbor);
+						frontier.reorderUpFrom(neighbor);
 					}
 					else
 					{
