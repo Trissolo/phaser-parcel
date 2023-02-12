@@ -18,7 +18,7 @@ export default class AStar
 		this.SPTstocazz = [];
 		
 		//Search Frontier
-		this.searchFrontier = new Set();
+		// this.searchFrontier = new Set();
 
 		this.cameFrom = new Map();
 
@@ -35,10 +35,13 @@ export default class AStar
 		//populate gScore and fScore
         for (const node of graph.keys())
         {
-            this.fScore.set(node, 0);
+            this.fScore.set(node, Number.MAX_SAFE_INTEGER);
 
-            this.costSoFar.set(node, 0);
+            // this.costSoFar.set(node, 0);
         };
+
+		this.costSoFar.set(this.start, 0);
+		this.fScore.set(this.start, 0);
 
         // console.log(this.gScore);
   
@@ -176,11 +179,12 @@ export default class AStar
 	{
 		let advanc = 0;
 		console.log("SEARCH");
+
 		//The PRIORITY QUEUE is now sorted depending on the F cost vector
 		const frontier = new PriorityQueue(this.fScore);
 		
 		frontier.insert(this.start);
-		this.searchFrontier.add(this.start)
+		// this.searchFrontier.add(this.start)
 
         while(!frontier.isEmpty())
 		{
@@ -213,7 +217,7 @@ export default class AStar
 
 				// yield null;
 
-				if(!this.searchFrontier.has(neighbor) || betterCost)
+				if(!this.cameFrom.has(neighbor) || betterCost)
 				{
 					this.costSoFar.set(neighbor, newCost);
 
@@ -221,7 +225,6 @@ export default class AStar
 					
 					this.cameFrom.set(neighbor, currentNode);
 
-					this.searchFrontier.add(neighbor)
 
 					// betterCost? frontier.reorderUpFrom(neighbor) : frontier.insert(neighbor)
 					if (betterCost)
