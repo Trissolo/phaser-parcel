@@ -62,11 +62,21 @@ export default class PlayScene extends Phaser.Scene {
     //test clonedMap
     // const clonedGraph = this.pmStroll.prepareGraph(this.player, this.dest, this.polyMap);
 
-    // console.log("ClonedGraph", clonedGraph);
+    // test astar
+    const finderAstar = this.pmStroll.prepareGraph(this.player, this.dest, this.polyMap);
+    console.log("ClonedGraph aka Finder", finderAstar);
 
-    // this.gag = this.pmStroll.drawPolyMap(clonedGraph);
+
+    this.gag = finderAstar.search();
     this.input.keyboard.on("keydown-Z", () => {this.gag.next()});
 
+    const path = finderAstar.getPath();
+
+    console.log("PATH!:", path)
+
+    
+    this.pmStroll.debug.setLineColor(0xffff99)
+    this.pmStroll.debug.graphics.strokePoints(path, false, false)
     // const finder = new AStar(this.player, this.dest, testGraphHelper.cloneGraph(this.polyMap.graph), this.pmStroll.debug)
 
 
@@ -136,10 +146,23 @@ export default class PlayScene extends Phaser.Scene {
 
         this.dest.setPosition(pointer.worldX, pointer.worldY);
       }
-    // }
+
     else
     {
-      this.gag = this.pmStroll.drawPolyMap(   this.pmStroll.prepareGraph(this.player, this.dest, this.polyMap));
+      // this.gag = this.pmStroll.drawPolyMap(   this.pmStroll.prepareGraph(this.player, this.dest, this.polyMap));
+      const finderAstar = this.pmStroll.prepareGraph(this.player, this.dest, this.polyMap);
+      
+      finderAstar.search();
+
+      // this.gag = finderAstar.search();
+
+      const path = finderAstar.getPath();
+
+      console.log("CLICK PATH!:", path)
+
+      this.pmStroll.debug.graphics.clear()
+      this.pmStroll.debug.setLineColor(0xffff99)
+      this.pmStroll.debug.graphics.strokePoints(path, false, false)
     }
   }
 

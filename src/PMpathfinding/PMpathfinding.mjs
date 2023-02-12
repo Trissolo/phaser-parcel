@@ -262,7 +262,6 @@ export default class PMpathfinding
 
     prepareGraph(start, end, polygonalMap)
     {
-      // const finder = new AStar(this.player, this.dest, testGraphHelper.cloneGraph(this.polyMap.graph), this.pmStroll.debug)
       const clone = testGraphHelper.cloneGraph(polygonalMap.graph);
 
       testGraphHelper.addNode(start, clone);
@@ -292,6 +291,13 @@ export default class PMpathfinding
         }
       }
 
+      //temp! the clone must be returned!
+      const finder = new AStar(start, end, clone, this.debug);
+      console.log("Finder:", finder)
+      // console.log("Finder:", finder.getPath())
+      return finder
+
+
 
 
       // testGraphHelper.addNode(end, clone);
@@ -304,9 +310,9 @@ export default class PMpathfinding
       //   }
       // }
 
-      console.log("Sizes", clone.size, polygonalMap.graph.size, "imp:", tempKeysFirstTime.length, tempKeysFirstTime);
+      // console.log("Sizes", clone.size, polygonalMap.graph.size, "imp:", tempKeysFirstTime.length, tempKeysFirstTime);
 
-      return clone
+      // return clone
     }
 
     *oldInLineOfSight(start, end, polygonalMap)
