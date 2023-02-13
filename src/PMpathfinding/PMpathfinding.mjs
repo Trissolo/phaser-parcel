@@ -326,7 +326,7 @@ export default class PMpathfinding
 
       // const path = finder.getPath();
 
-      // console.log("finder", finder)
+      console.log("destroyGraph", testGraphHelper.destroyGraph(clonedGraph))
 
       return finder.getPath()
     }

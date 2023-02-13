@@ -50,4 +50,21 @@ export default class testGraphHelper
 
         return cloneGraph
     }
+
+    static destroyGraph(graph)
+    {
+        for (const [orig, container] of graph)
+        {
+            graph.get(orig).clear();
+        }
+
+        //graph.clear();
+
+        for (const [orig, container] of graph)
+        {
+            console.log("(After) %o -> %o", orig, graph.get(orig));
+        }
+        
+        return graph
+    }
 }
