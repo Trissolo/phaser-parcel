@@ -8,6 +8,7 @@ import testGraphHelper from "./testGraphHelper.mjs";
 
 //helpers
 import setLineFromVectors from "./setLineFromVectors.mjs";
+import vector2LikeFromObject from "./vector2LikeFromObject.mjs";
 
 const {BetweenPoints: heuristic} = Phaser.Math.Distance
 // const {Polygon, Line} = Phaser.Geom
@@ -313,6 +314,9 @@ export default class PMpathfinding
 
     pathAStar(start, end, polygonalMap)
     {
+      start = vector2LikeFromObject(start);
+      end = vector2LikeFromObject(end);
+      
       const clonedGraph = this.prepareGraph(start, end, polygonalMap);
 
       const finder = new AStar(start, end, clonedGraph, this.debug)//.search();
