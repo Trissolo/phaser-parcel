@@ -139,6 +139,10 @@ export default class PlayScene extends Phaser.Scene {
     if (pointer.middleButtonDown())
     {
       this.player.setPosition(pointer.worldX, pointer.worldY);
+      
+      const testDijPathfinding = this.pmStroll.pathDijkstra(this.player, this.dest, this.polyMap);
+      
+      console.dir("SceneA Dijkstra:", testDijPathfinding)
     }
 
     else if (pointer.rightButtonDown())

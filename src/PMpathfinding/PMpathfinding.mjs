@@ -2,6 +2,7 @@ import PMpathfindingDebug from "./PMpathfindingDebug.mjs";
 import newVisMap from "./newVisMap.mjs";
 
 import AStar from "./pfalgorithms/astar.mjs";
+import Dijkstra from "./pfalgorithms/Dijkstra.mjs";
 
 // import testGraphHelper from "./testGraph.mjs";
 import testGraphHelper from "./testGraphHelper.mjs";
@@ -320,6 +321,25 @@ export default class PMpathfinding
       const clonedGraph = this.prepareGraph(start, end, polygonalMap);
 
       const finder = new AStar(start, end, clonedGraph, this.debug);
+
+      // const path = finder.getPath();
+
+      // console.log(finder);
+
+      // return path //finder.getPath()
+      
+      return finder.getPath();
+
+    }
+
+    pathDijkstra(start, end, polygonalMap)
+    {
+      start = vector2LikeFromObject(start);
+      end = vector2LikeFromObject(end);
+      
+      const clonedGraph = this.prepareGraph(start, end, polygonalMap);
+
+      const finder = new Dijkstra(start, end, clonedGraph, this.debug);
 
       // const path = finder.getPath();
 
