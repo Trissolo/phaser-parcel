@@ -143,6 +143,12 @@ export default class PlayScene extends Phaser.Scene {
       const testDijPathfinding = this.pmStroll.pathDijkstra(this.player, this.dest, this.polyMap);
       
       console.dir("SceneA Dijkstra:", testDijPathfinding)
+      if(testDijPathfinding.length)
+      {
+        console.log("...drawing")
+        // this.pmStroll.debug.graphics.clear();
+        this.pmStroll.debug.showPath(testDijPathfinding, 0xb845a9)
+      }
     }
 
     else if (pointer.rightButtonDown())
@@ -167,7 +173,7 @@ export default class PlayScene extends Phaser.Scene {
       {
         console.log("...drawing")
         this.pmStroll.debug.graphics.clear();
-        this.pmStroll.debug.showPath(testPathfinding, 0xb845a9)
+        this.pmStroll.debug.showPath(testPathfinding, 0x99dddd)
       }
     }
   }
