@@ -324,11 +324,14 @@ export default class PMpathfinding
 
       // finder.search();
 
-      // const path = finder.getPath();
+      const path = finder.getPath();
 
-      console.log("destroyGraph", testGraphHelper.destroyGraph(clonedGraph))
+      finder.destroy();
 
-      return finder.getPath()
+      console.log("destroy!", testGraphHelper.destroyGraph(clonedGraph))
+      console.log(finder)
+
+      return path //finder.getPath()
     }
 
 

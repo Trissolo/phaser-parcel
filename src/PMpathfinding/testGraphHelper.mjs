@@ -22,8 +22,6 @@ export default class testGraphHelper
     {
         if (!this.edgeAlreadyExists(node, neighbor, graph))
         {
-            // const dist = Phaser.Math.Distance.BetweenPoints(node, neighbor);
-
             this.edgesContainerOf(node, graph).set(neighbor, dist);
 
             this.edgesContainerOf(neighbor, graph).set(node, dist);
@@ -58,12 +56,12 @@ export default class testGraphHelper
             graph.get(orig).clear();
         }
 
-        //graph.clear();
+        graph.clear();
 
-        for (const [orig, container] of graph)
-        {
-            console.log("(After) %o -> %o", orig, graph.get(orig));
-        }
+        // for (const [orig, container] of graph)
+        // {
+        //     console.log("(After) %o -> %o", orig, graph.get(orig));
+        // }
         
         return graph
     }
