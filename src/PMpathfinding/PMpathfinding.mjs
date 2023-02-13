@@ -315,6 +315,7 @@ export default class PMpathfinding
 
     pathAStar(start, end, polygonalMap)
     {
+      console.log("BOH!")
       start = vector2LikeFromObject(start);
       end = vector2LikeFromObject(end);
       
