@@ -22,8 +22,8 @@ export default class Dijkstra
 		// gScore === costSoFar
 		// key: node, value: dist
 
-		this.costSoFar = new Map([...graph.keys()].map(el => [el, 0]));
-
+		this.costSoFar = new Map([[this.start, 0]]);//[...graph.keys()].map(el => [el, 0]));
+        // this.costSoFar.set(start, 0);
 		
 		// For node n, fScore[n] := gScore[n] + h(n). fScore[n] represents our current best guess as to
     	// how short a path from start to finish can be if it goes through n.
@@ -39,9 +39,6 @@ export default class Dijkstra
         // };
 
 		this.frontier = new PriorityQueue(this.costSoFar);
-
-		//moved
-		// this.costSoFar.set(this.start, 0);
 		
 		this.search()
 	}	
@@ -52,7 +49,7 @@ export default class Dijkstra
 		
 		frontier.insert(start);
 
-		costSoFar.set(start, 0);
+		// costSoFar.set(start, 0);
 
         while(!frontier.isEmpty() )
 		{
@@ -62,7 +59,18 @@ export default class Dijkstra
 
 			if (currentNode === target) {console.log("DJIK B R E A K I N G"); break};//return this };//.getPath() };
 
+            // for (const [neighbor, distance] of graph.get(currentNode))
+            // {
+            //     // https://www.redblobgames.com/pathfinding/posts/reprioritize.html
+            //     const newCost = costSoFar.get(currentNode) + distance;
 
+            //     if (!costSoFar.has(neighbor))
+            //     {
+            //         costSoFar.set(neighbor, newCost);
+            //         cameFrom.set(neighbor, currentNode);
+            //         frontier.insert(neighbor);
+            //     }
+            // }
 			for (const [neighbor, distance] of graph.get(currentNode))
 			{
 					const newCost = costSoFar.get(currentNode) + distance;
