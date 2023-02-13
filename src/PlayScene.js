@@ -151,12 +151,14 @@ export default class PlayScene extends Phaser.Scene {
     {
       //basic AStar test (without destroying clonedGrap, though)
 
-      console.dir("Left click: test newPrepareGraph");
+      console.log("Left click: test newPrepareGraph");
+
       const testPathfinding = this.pmStroll.pathAStar(this.player, this.dest, this.polyMap);
+      
       console.dir("SceneA AStar:", testPathfinding)
 
-      //show
-      
+
+      //show      
       if(testPathfinding.length)
       {
         console.log("...drawing")

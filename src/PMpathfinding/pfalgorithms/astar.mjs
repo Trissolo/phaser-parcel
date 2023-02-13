@@ -48,64 +48,56 @@ export default class AStar
 	
 	search()
 	{
-		console.log("SEARCH");
+		// console.log("SEARCH");
 
-		const {frontier, costSoFar, cameFrom, fScore, heuristic, start, target, graph} = this; //new PriorityQueue(this.fScore);
+		const {frontier, costSoFar, cameFrom, fScore, heuristic, start, target, graph} = this;
 		
 		frontier.insert(start);
 
 		costSoFar.set(start, 0);
 
-
-		console.log("CFS OUT", cameFrom.size);
-
-        while(!frontier.isEmpty())
+        while(!frontier.isEmpty() )
 		{
 			const currentNode = frontier.pop();
 
-			console.log("CFS IN", cameFrom.size);
-
 			// console.log("%cAdvanc:", "background-color: #589");
 
-			if (currentNode === target) { break};//return this };//.getPath() };
+			if (currentNode === target) {console.log("B R E A K I N G"); break};//return this };//.getPath() };
 
 
 			for (const [neighbor, distance] of graph.get(currentNode))
 			{
-				// console.log(currentNode);
-				// console.log(neighbor);
-				// console.log(distance);
+				// if(this.flag)
+				// {
+			
+					// console.log(currentNode);
+					// console.log(neighbor);
+					// console.log(distance);
 
-				// console.dir("CSF", costSoFar)
+					// console.dir("CSF", costSoFar)
 
+					// yield null
 
+					const newCost = costSoFar.get(currentNode) + distance;
 
-				// yield null
+					const betterCost = newCost < costSoFar.get(neighbor);
 
-				const newCost = (costSoFar.get(currentNode) + distance);
+					// yield null;
 
-				const betterCost = newCost < costSoFar.get(neighbor)
+					if(!cameFrom.has(neighbor) || betterCost)
+					{
+						costSoFar.set(neighbor, newCost);
 
+						fScore.set(neighbor, newCost + heuristic(neighbor, target));
+						
+						cameFrom.set(neighbor, currentNode);
 
-				// yield null;
-
-				if(!cameFrom.has(neighbor) || betterCost)
-				{
-					costSoFar.set(neighbor, newCost);
-
-					fScore.set(neighbor, newCost + heuristic(neighbor, target));
-					
-					cameFrom.set(neighbor, currentNode);
-
-					betterCost? frontier.reorderUpFrom(neighbor) : frontier.insert(neighbor)
-				}
-				
-			}
+						betterCost? frontier.reorderUpFrom(neighbor) : frontier.insert(neighbor)
+					}
+			} //end for...of loop
         }
 
-		console.log("While ended");
-		this.getPath()
-    }
+    } //end Search
 
 	getPath()
 	{
@@ -114,12 +106,15 @@ export default class AStar
 		let {target} = this;
 
 
-		if (!this.cameFrom.has(target) || !this.cameFrom.size) {return path} // console.log("I N V A L I D!"), path}
+		if (!this.cameFrom.has(target) || !this.cameFrom.size)
+		{
+			this.destroy(); return path
+		}
 		
 		path.push(target);
 
 
-		while (target !== this.start) // && (this.cameFrom.has(target) || this.cameFrom.get(target) === undefined))
+		while (target !== this.start)
 		{
 			target = this.cameFrom.get(target);
 
@@ -129,20 +124,22 @@ export default class AStar
 			path.push({x: target.x, y: target.y});
 		}
 
-		// is it safe to do it now?
-		// this.destroy()
+		this.destroy();
 
 		return path
 	}
 
 	destroy()
 	{
+		// console.log("Destroying Finder", this)
+
 		this.fScore.clear();
 		this.fScore = undefined;
 
 		this.frontier.orderedArr.length = 0;
 		this.frontier.orderedArr = undefined;
 		this.frontier.distancesMap = undefined;
+		this.frontier = undefined;
 
 		this.costSoFar.clear();
 		this.costSoFar = undefined;
@@ -156,5 +153,7 @@ export default class AStar
 
 		testGraphHelper.destroyGraph(this.graph);
 		this.graph = undefined;
+
+		// console.log("Finder destr", this)
 	}
 }
