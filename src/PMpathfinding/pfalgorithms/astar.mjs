@@ -15,6 +15,7 @@ export default class AStar
 		this.heuristic = heuristic;
 
 
+		// key
 		this.cameFrom = new Map();
 
 		//For node n, gScore[n] is the cost of the cheapest path from start to n currently known.
@@ -41,15 +42,11 @@ export default class AStar
 		//moved
 		// this.costSoFar.set(this.start, 0);
 		
-
-
 		this.search()
 	}	
 	
 	search()
 	{
-		// console.log("SEARCH");
-
 		const {frontier, costSoFar, cameFrom, fScore, heuristic, start, target, graph} = this;
 		
 		frontier.insert(start);
@@ -67,22 +64,10 @@ export default class AStar
 
 			for (const [neighbor, distance] of graph.get(currentNode))
 			{
-				// if(this.flag)
-				// {
-			
-					// console.log(currentNode);
-					// console.log(neighbor);
-					// console.log(distance);
-
-					// console.dir("CSF", costSoFar)
-
-					// yield null
-
 					const newCost = costSoFar.get(currentNode) + distance;
 
 					const betterCost = newCost < costSoFar.get(neighbor);
 
-					// yield null;
 
 					if(!cameFrom.has(neighbor) || betterCost)
 					{
@@ -94,8 +79,9 @@ export default class AStar
 
 						betterCost? frontier.reorderUpFrom(neighbor) : frontier.insert(neighbor)
 					}
-			} //end for...of loop
-        }
+			} // end for...of loop
+
+        } // end while
 
     } //end Search
 
@@ -131,7 +117,7 @@ export default class AStar
 
 	destroy()
 	{
-		// console.log("Destroying Finder", this)
+		// console.log("Destroying Finder", ...this.graph.get(this.start).keys())
 
 		this.fScore.clear();
 		this.fScore = undefined;
