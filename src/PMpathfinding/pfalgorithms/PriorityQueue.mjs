@@ -19,6 +19,16 @@ export default class PriorityQueue
     {
         this.distancesMap = distancesMap;
     }
+
+    show()
+    {
+        let res = "";
+        for (const idx of this.orderedArr)
+        {
+            res += `${this.distancesMap.get(idx)} - `;
+        }
+        return res
+    }
     
     insert(node)
     {
