@@ -17,26 +17,22 @@ export default class Dijkstra
 
 		// key
 		this.cameFrom = new Map();
+		//this.cameFrom.set()
+
 
 		//For node n, gScore[n] is the cost of the cheapest path from start to n currently known.
 		// gScore === costSoFar
 		// key: node, value: dist
 
-		this.costSoFar = new Map([[this.start, 0]]);//[...graph.keys()].map(el => [el, 0]));
-        // this.costSoFar.set(start, 0);
-		
-		// For node n, fScore[n] := gScore[n] + h(n). fScore[n] represents our current best guess as to
-    	// how short a path from start to finish can be if it goes through n.
-		// key: node, value: dist
-		
-		// this.fScore = new Map();
+		this.costSoFar = new Map([...graph.keys()].map(el => [el, 0]));	
 
-		// //populate fScore
+		// //populate costSoFar
         // for (const node of graph.keys())
         // {
-        //     this.fScore.set(node, 0); //Number.MAX_SAFE_INTEGER);
-
+        //     this.costSoFar.set(node, 0);
         // };
+
+		this.costSoFar.set(start, 0);
 
 		this.frontier = new PriorityQueue(this.costSoFar);
 		
@@ -48,6 +44,7 @@ export default class Dijkstra
 		const {frontier, costSoFar, cameFrom, heuristic, start, target, graph} = this;
 		
 		frontier.insert(start);
+		cameFrom.set(start, null)
 
 		// costSoFar.set(start, 0);
 
@@ -57,7 +54,7 @@ export default class Dijkstra
 
 			// console.log("%cAdvanc:", "background-color: #589");
 
-			if (currentNode === target) {console.log("DJIK B R E A K I N G"); break};//return this };//.getPath() };
+			if (currentNode === target) {console.log("DJIK B R E A K I N G"); return this };//.getPath() };
 
             // for (const [neighbor, distance] of graph.get(currentNode))
             // {
@@ -75,7 +72,7 @@ export default class Dijkstra
 			{
 					const newCost = costSoFar.get(currentNode) + distance;
                     // console.log("prec dist %o | dist %o | newCost %o", costSoFar.get(currentNode), distance, newCost)
-
+					// console.log("NEICOS", costSoFar.get(neighbor))
 					const betterCost = newCost < costSoFar.get(neighbor);
 
 
@@ -99,9 +96,10 @@ export default class Dijkstra
 		const path = [];
 		
 		let {target} = this;
+		// console.log(this.cameFrom, this.cameFrom.size, target)
 
-
-		if (!this.cameFrom.has(target) || !this.cameFrom.size)
+		// if (!this.cameFrom.has(target) || !this.cameFrom.size)
+		if (!this.cameFrom.has(target) || this.cameFrom.size === 1)
 		{
 			this.destroy(); return path
 		}
