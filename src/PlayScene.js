@@ -173,7 +173,7 @@ export default class PlayScene extends Phaser.Scene {
       {
         console.log("...drawing")
         this.pmStroll.debug.graphics.clear();
-        this.pmStroll.debug.showPath(testPathfinding, 0x99dddd)
+        this.pmStroll.debug.showPath(testPathfinding, 0x998833)
       }
     }
   }
