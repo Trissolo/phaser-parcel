@@ -4,7 +4,7 @@ import newVisMap from "./newVisMap.mjs";
 import AStar from "./pfalgorithms/astar.mjs";
 import Dijkstra from "./pfalgorithms/Dijkstra.mjs";
 
-import AStarOher from "./AStarOther.mjs";
+import AStarOther from "./AStarOther.mjs";
 
 // import testGraphHelper from "./testGraph.mjs";
 import testGraphHelper from "./testGraphHelper.mjs";
@@ -324,16 +324,19 @@ export default class PMpathfinding
       const clonedGraph = this.prepareGraph(start, end, polygonalMap);
 
       // const finder = new AStar(start, end, clonedGraph, this.debug);
-      const finder = new AStarOher(start, end, clonedGraph, this.debug);
-
-
-      // const path = finder.getPath();
-
-      // console.log(finder);
-
-      // return path //finder.getPath()
+      const finder = new AStarOther(start, end, clonedGraph, this.debug);
       
+      // commented out during test
+      // return finder.getPath();
+
+      //deb from here
+      // this.gag = finder.debugSearch();
+      // this.scene.input.keyboard.on("keydown-Z", () => {this.gag.next()});
+      // return {}
+
+      // second test
       return finder.getPath();
+
 
     }
 

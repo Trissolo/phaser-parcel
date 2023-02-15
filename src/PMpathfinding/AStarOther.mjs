@@ -1,11 +1,10 @@
 import Phaser from "phaser";
-
 import testGraphHelper from "./testGraphHelper.mjs";
 import PriorityQueue from "./pfalgorithms/PriorityQueue.mjs";
 
-export default class AStarOher
+export default class AStarOther
 {
-    constructor(start, target, graph, debug, heuristic = Phaser.Math.Distance.BetweenPoints)
+    constructor(start, target, graph, debug, heuristic = Phaser.Math.Distance.Between)
 	{
 		this.start = start;
 
@@ -16,89 +15,83 @@ export default class AStarOher
 		this.heuristic = heuristic;
 
 
-		// key node, value: the node immediately preceding it on the cheapest path from start
-		// to n currently known.
+		// key
 		this.cameFrom = new Map();
+		//this.cameFrom.set()
+
 
 		//For node n, gScore[n] is the cost of the cheapest path from start to n currently known.
 		// gScore === costSoFar
-		// key: node, value: number (distance)
-		this.gScore = new Map();
-
-		// For node n, fScore[n] := gScore[n] + h(n). fScore[n] represents our current best guess as to
-		// how short a path from start to finish can be if it goes through n.
 		// key: node, value: dist
-		
+
+		this.costSoFar = new Map(); //[...graph.keys()].map(el => [el, 0]));
+
 		this.fScore = new Map();
 
 
-		//populate gScore (aka costSoFar)
-		const {MAX_SAFE_INTEGER} = Number;
+		//populate costSoFar
         for (const node of graph.keys())
         {
-            this.gScore.set(node, MAX_SAFE_INTEGER);
-			this.fScore.set(node, MAX_SAFE_INTEGER);
+            this.costSoFar.set(node, 0);
+			// this.fScore.set(node, 0);
         };
 
+		// this.costSoFar.set(start, 0);
 
-		this.openSet = new PriorityQueue(this.fScore);
+		this.frontier = new PriorityQueue(this.fScore);
 		
 		this.search()
 	}	
 	
 	search()
 	{
-		const {openSet, gScore, cameFrom, fScore, heuristic, start, target, graph} = this;
+		const {frontier, costSoFar, cameFrom, heuristic, start, target, graph, fScore} = this;
 		
-		gScore.set(start, 0);
-		
-		fScore.set(start, 0);
-		
-		openSet.insert(start);
+		frontier.insert(start);
+		cameFrom.set(start, null)
 
-        while(!openSet.isEmpty() )
+		// costSoFar.set(start, 0);
+
+        while(!frontier.isEmpty() )
 		{
-			const currentNode = openSet.pop();
+			const currentNode = frontier.pop();
 
 			// console.log("%cAdvanc:", "background-color: #589");
 
-			if (currentNode === target) { return this };//.getPath() };
+			if (currentNode === target) {console.log("A* D O N E"); return this };//.getPath() };
 
+            // for (const [neighbor, distance] of graph.get(currentNode))
+            // {
+            //     // https://www.redblobgames.com/pathfinding/posts/reprioritize.html
+            //     const newCost = costSoFar.get(currentNode) + distance;
 
+            //     if (!costSoFar.has(neighbor))
+            //     {
+            //         costSoFar.set(neighbor, newCost);
+            //         cameFrom.set(neighbor, currentNode);
+            //         frontier.insert(neighbor);
+            //     }
+            // }
 			for (const [neighbor, distance] of graph.get(currentNode))
 			{
-				// console.log("---", gScore.get(neighbor), cameFrom.size)
-				// console.log("FScore:", openSet.show())
-				// BEFORE:
-				// const tentative_gScore = gScore.get(currentNode) + distance;
+				// console.log("\n\nCurrNode: %o\n\nActualNeig %o", currentNode, neighbor)
+					const newCost = costSoFar.get(currentNode) + distance;
+					const betterCost = newCost < costSoFar.get(neighbor);
+                    // console.log("prec dist %o | dist %o | newCost %o", costSoFar.get(currentNode), distance, newCost)
+					// console.log("%o NEICOS | %o neig: %o", betterCost, costSoFar.get(neighbor), neighbor)
 
-				// After:
-				const tentative_gScore = gScore.get(currentNode) + distance;
 
-				const betterCost = tentative_gScore < gScore.get(neighbor);
+					if(!cameFrom.has(neighbor) || betterCost)
+					{
+                        // console.log()
+						costSoFar.set(neighbor, newCost);
 
-				console.log("---", betterCost, gScore.get(neighbor), cameFrom.size)
+						cameFrom.set(neighbor, currentNode);
 
-				if(!cameFrom.has(neighbor))// || betterCost)
-				{
-					cameFrom.set(neighbor, currentNode);
+						fScore.set(neighbor, newCost + heuristic(neighbor, target));
 
-					gScore.set(neighbor, tentative_gScore);
-
-					fScore.set(neighbor, tentative_gScore + heuristic(neighbor, target));
-					
-					openSet.insert(neighbor);
-				}
-				else if (betterCost)
-				{
-					gScore.set(neighbor, tentative_gScore);
-
-					fScore.set(neighbor, tentative_gScore + heuristic(neighbor, target));
-					
-					openSet.reorderUpFrom(neighbor);
-
-					cameFrom.set(neighbor, currentNode);
-				}
+						betterCost? frontier.reorderUpFrom(neighbor) : frontier.insert(neighbor)
+					}
 			} // end for...of loop
 
         } // end while
@@ -110,9 +103,10 @@ export default class AStarOher
 		const path = [];
 		
 		let {target} = this;
+		// console.log(this.cameFrom, this.cameFrom.size, target)
 
-
-		if (!this.cameFrom.has(target) || !this.cameFrom.size)
+		// if (!this.cameFrom.has(target) || !this.cameFrom.size)
+		if (!this.cameFrom.has(target) || this.cameFrom.size === 1)
 		{
 			this.destroy(); return path
 		}
@@ -139,16 +133,19 @@ export default class AStarOher
 	{
 		// console.log("Destroying Finder", ...this.graph.get(this.start).keys())
 
+		// this.fScore.clear();
+		// this.fScore = undefined;
+
+		this.frontier.orderedArr.length = 0;
+		this.frontier.orderedArr = undefined;
+		this.frontier.distancesMap = undefined;
+		this.frontier = undefined;
+
+		this.costSoFar.clear();
+		this.costSoFar = undefined;
+
 		this.fScore.clear();
 		this.fScore = undefined;
-
-		this.openSet.orderedArr.length = 0;
-		this.openSet.orderedArr = undefined;
-		this.openSet.distancesMap = undefined;
-		this.openSet = undefined;
-
-		this.gScore.clear();
-		this.gScore = undefined;
 
 		this.cameFrom.clear();
 		this.cameFrom = undefined;

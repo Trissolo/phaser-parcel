@@ -45,6 +45,7 @@ export default class AStar
 		const {frontier, cameFrom, start, target, costSoFar, fScore, graph} = this;
 
 		frontier.insert(start);
+		cameFrom.set(start, null)
 
 		while (!frontier.isEmpty())
 		{
@@ -54,9 +55,14 @@ export default class AStar
 
 			for (const [neighbor, distance] of graph.get(currentNode))
 			{
-				const newCost = costSoFar.get(neighbor) + distance;
+				console.log("---", costSoFar.get(start))
+				const newCost = costSoFar.get(currentNode) + distance;
+				// const newCost = costSoFar.get(neighbor) + distance;
 
-				if (!cameFrom.has(neighbor))
+				// const weHaveBetterCost = newCost < 
+
+				// console.log(!cameFrom.has(neighbor), newCost < costSoFar.get(neighbor))
+				if (!cameFrom.has(neighbor)) // || newCost < costSoFar.get(neighbor))
 				{
 					cameFrom.set(neighbor, currentNode);
 
@@ -64,7 +70,18 @@ export default class AStar
 
 					costSoFar.set(neighbor, newCost);
 
-					newCost < costSoFar.get(neighbor) ? frontier.reorderUpFrom(neighbor) : frontier.insert(neighbor);
+					// newCost < costSoFar.get(neighbor) ? frontier.reorderUpFrom(neighbor) : frontier.insert(neighbor);
+					frontier.insert(neighbor);
+				}
+				else if (newCost < costSoFar.get(neighbor))
+				{
+					cameFrom.set(neighbor, currentNode);
+
+					fScore.set(neighbor, newCost + this.heuristic(neighbor, target));
+
+					costSoFar.set(neighbor, newCost);
+
+					frontier.reorderUpFrom(neighbor);
 				}
 			} // end for...of loop
 		} // end while
@@ -78,7 +95,7 @@ export default class AStar
 		let {target} = this;
 
 
-		if (!this.cameFrom.has(target) || !this.cameFrom.size)
+		if (!this.cameFrom.has(target) || this.cameFrom.size === 1)
 		{
 			this.destroy();
 
@@ -99,7 +116,7 @@ export default class AStar
 		}
 
 		this.destroy();
-		
+
 		return path
 	}
 
