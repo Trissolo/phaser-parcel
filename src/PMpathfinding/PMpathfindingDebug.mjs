@@ -66,7 +66,14 @@ export default class PMpathfindingDebug
 
     showVector(vector)
 	{
+		
 		this.graphics.fillPoint(vector.x, vector.y, 3)
+	}
+
+	fillCircle(vector, col = 0xffffff)
+	{
+		this.setFillColor(col);
+		this.graphics.fillCircle(vector.x, vector.y, 4);
 	}
 
     showPolygon(pointsAry, color = CONSTANTS.walkableFillCol)
