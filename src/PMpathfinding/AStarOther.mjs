@@ -4,7 +4,7 @@ import PriorityQueue from "./pfalgorithms/PriorityQueue.mjs";
 
 export default class AStarOther
 {
-    constructor(start, target, graph, debug, heuristic = Phaser.Math.Distance.Between)
+    constructor(start, target, graph, debug, heuristic = Phaser.Math.Distance.BetweenPoints)
 	{
 		this.start = start;
 
