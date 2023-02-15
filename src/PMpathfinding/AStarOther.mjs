@@ -32,11 +32,11 @@ export default class AStarOther
 		//populate costSoFar
         for (const node of graph.keys())
         {
-            this.costSoFar.set(node, 0);
+            // this.costSoFar.set(node, 0);
 			// this.fScore.set(node, 0);
         };
 
-		// this.costSoFar.set(start, 0);
+		this.costSoFar.set(start, 0);
 
 		this.frontier = new PriorityQueue(this.fScore);
 		
@@ -47,8 +47,9 @@ export default class AStarOther
 	{
 		const {frontier, costSoFar, cameFrom, heuristic, start, target, graph, fScore} = this;
 		
+		fScore.set(start, 0)
+		costSoFar.set(start, 0);
 		frontier.insert(start);
-		cameFrom.set(start, null)
 
 		// costSoFar.set(start, 0);
 
@@ -74,7 +75,7 @@ export default class AStarOther
             // }
 			for (const [neighbor, distance] of graph.get(currentNode))
 			{
-				// console.log("\n\nCurrNode: %o\n\nActualNeig %o", currentNode, neighbor)
+				// console.log("\n\nCurrNode: %o\n\nActualNeig %o", costSoFar.size, fScore.size)
 					const newCost = costSoFar.get(currentNode) + distance;
 					const betterCost = newCost < costSoFar.get(neighbor);
                     // console.log("prec dist %o | dist %o | newCost %o", costSoFar.get(currentNode), distance, newCost)
@@ -88,7 +89,7 @@ export default class AStarOther
 
 						cameFrom.set(neighbor, currentNode);
 
-						fScore.set(neighbor, newCost + heuristic(neighbor, target));
+						fScore.set(neighbor, newCost + heuristic(neighbor, target) );
 
 						betterCost? frontier.reorderUpFrom(neighbor) : frontier.insert(neighbor)
 					}
