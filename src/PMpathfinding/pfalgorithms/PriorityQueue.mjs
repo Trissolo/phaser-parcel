@@ -25,7 +25,7 @@ export default class PriorityQueue
         let res = "";
         for (const idx of this.orderedArr)
         {
-            res += `${this.distancesMap.get(idx)} - `;
+            res += `{${idx.x}, ${idx.y}} -`; // `${this.distancesMap.get(idx)} - `;
         }
         return res
     }

@@ -51,10 +51,13 @@ export default class AStarOther
 		costSoFar.set(start, 0);
 		frontier.insert(start);
 
+		cameFrom.set(start, null)
+
 		// costSoFar.set(start, 0);
 
         while(!frontier.isEmpty() )
 		{
+			console.log(frontier.show());
 			const currentNode = frontier.pop();
 
 			// console.log("%cAdvanc:", "background-color: #589");
@@ -103,26 +106,26 @@ export default class AStarOther
 	{
 		const path = [];
 		
-		let {target} = this;
-		// console.log(this.cameFrom, this.cameFrom.size, target)
+		let {target: actualNode} = this;
+		// console.log(this.cameFrom, this.cameFrom.size, actualNode)
 
-		// if (!this.cameFrom.has(target) || !this.cameFrom.size)
-		if (!this.cameFrom.has(target) || this.cameFrom.size === 1)
+		// if (!this.cameFrom.has(actualNode) || !this.cameFrom.size)
+		if (!this.cameFrom.has(actualNode) || this.cameFrom.size === 1)
 		{
 			this.destroy(); return path
 		}
 		
-		path.push(target);
+		path.push(actualNode);
 
 
-		while (target !== this.start)
+		while (actualNode !== this.start)
 		{
-			target = this.cameFrom.get(target);
+			actualNode = this.cameFrom.get(actualNode);
 
-			// path.push(target);
+			// path.push(actualNode);
 
 			//new obj?
-			path.push({x: target.x, y: target.y});
+			path.push({x: actualNode.x, y: actualNode.y});
 		}
 
 		this.destroy();

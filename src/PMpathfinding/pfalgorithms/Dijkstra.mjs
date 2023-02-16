@@ -50,6 +50,7 @@ export default class Dijkstra
 
         while(!frontier.isEmpty() )
 		{
+			console.log(frontier.show());
 			const currentNode = frontier.pop();
 
 			// console.log("%cAdvanc:", "background-color: #589");
@@ -70,11 +71,11 @@ export default class Dijkstra
             // }
 			for (const [neighbor, distance] of graph.get(currentNode))
 			{
-				console.log("\n\nCurrNode: %o\n\nActualNeig %o", currentNode, neighbor)
+				// console.log("\n\nCurrNode: %o\n\nActualNeig %o", currentNode, neighbor)
 					const newCost = costSoFar.get(currentNode) + distance;
 					const betterCost = newCost < costSoFar.get(neighbor);
-                    console.log("prec dist %o | dist %o | newCost %o", costSoFar.get(currentNode), distance, newCost)
-					console.log("%o NEICOS | %o neig: %o", betterCost, costSoFar.get(neighbor), neighbor)
+                    // console.log("prec dist %o | dist %o | newCost %o", costSoFar.get(currentNode), distance, newCost)
+					// console.log("%o NEICOS | %o neig: %o", betterCost, costSoFar.get(neighbor), neighbor)
 
 
 					if(!cameFrom.has(neighbor) || betterCost)
